@@ -11,6 +11,9 @@ server {
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
 
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	
+
     listen [::]:443 ssl ipv6only=on; # managed by Certbot
     listen 443 ssl; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/beta.totoz.eu/fullchain.pem; # managed by Certbot
@@ -33,3 +36,4 @@ server {
 
 
 }
+
