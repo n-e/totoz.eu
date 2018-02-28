@@ -5,7 +5,7 @@ import express = require('express')
 const routes = express.Router()
 
 routes.get('/',(req, res, next) => {
-    res.send('plip')
+    res.render('index')
 })
 
 export default routes
