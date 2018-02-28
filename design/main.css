@@ -1,0 +1,98 @@
+body, input {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    color: #444;
+}
+
+body {
+    background: #f5f5f5;
+    border-top:3px solid #0af;
+    margin:0;
+}
+
+.links {
+    background:#fff;
+    margin-top:0;
+    padding: 12px 16px 12px 12px;
+    display: flex;
+    align-items: center;
+}
+
+.links > span {
+    padding-left: 12px;
+}
+
+.spc {
+    flex-grow: 1;
+}
+
+h1 {
+    padding:0; margin: 0;
+    font-weight:600;
+    font-size:22px;
+}
+
+#cnt {
+    padding: 0px 12px;
+}
+
+#search {
+    margin:12px 0;
+    text-align: center;
+}
+
+#searchf {
+    padding:3px;
+    min-width:20em;
+    width:30%;
+    -webkit-appearance: none;
+    border:1px solid #ccc;
+}
+
+.totozes {
+    display: flex;
+    flex-wrap: wrap;
+}
+.totoz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    margin: 4px;
+    padding:2px 2px 3px;
+    background: #fff;
+    width:94px;
+    overflow: hidden;
+    box-shadow:0 2px 2px 0 rgba(0, 0, 0, 0.02);
+}
+
+.totoz > * {
+    padding: 3px 0;
+}
+
+.totoz .img {
+    position:relative;
+}
+
+.totoz img {
+    max-width: 90px;
+    max-height: 80px;
+    xorder:-1;
+}
+
+
+
+.totoz .name {
+
+}
+
+.totoz .username {
+    color: #777;
+    font-size:11px;
+}
+
+.about {
+    color: #777;
+    text-align: center;
+    margin:50px 0 12px;
+}
