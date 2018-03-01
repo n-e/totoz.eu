@@ -1,12 +1,16 @@
 server {
 
-#        root /var/www/html;
+        root /home/totoz/totoz;
 #        index index.html index.htm index.nginx-debian.html;
 
         server_name beta.totoz.eu;
+	
+	location / {
+		try_files $uri @totoz;
+	}
 
-        location / {
-                proxy_pass http://localhost:3000/;
+        location @totoz {
+                proxy_pass http://localhost:3000;
                 proxy_set_header Host $host;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
@@ -14,10 +18,12 @@ server {
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 	
 
-    listen [::]:443 ssl ipv6only=on; # managed by Certbot
-    listen 443 ssl; # managed by Certbot
+    listen [::]:443 ssl http2 ipv6only=on; # managed by Certbot
+    listen 443 ssl http2; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/beta.totoz.eu/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/beta.totoz.eu/privkey.pem; # managed by Certbot
+    
+    
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
