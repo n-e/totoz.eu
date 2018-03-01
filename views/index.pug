@@ -1,7 +1,29 @@
-h1 Totoz.eu beta
-h2 Mockups
-ul
-    li
-        a(href='design/index.html') Index
-    li Totoz details
-    li User page
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        link(rel="stylesheet", href="/main.css")
+        title Totoz.eu Beta
+
+div(class='links')
+    h1 Totoz.eu Beta
+
+div(id='cnt')
+    form(action="",id='search')
+        input(type="text", name="searchf", id='searchf',autofocus)
+    div(class='totozes')
+        each t in totozes
+            div(class='totoz')
+                span(class='name')='[:'+t+']'
+                span(class='img')
+                    img(src="https://totoz.eu/"+t+".gif")
+                span(class='username') -
+
+
+div(class='about')
+    =' Contact | '
+    a(href="https://github.com/n-e/totoz.eu") Github
+    =' | '
+    a(href='design/index.html') Index Mockup
+    

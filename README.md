@@ -21,6 +21,8 @@
 - reverse proxy for the app
 - see official_server/totoz.eu
 
+## redis
+
 ### certbot
 
 - obvious settings
@@ -28,4 +30,4 @@
 
 ### Misc. Commands
 
-- rsync -az . beta.totoz.eu:/home/totoz/app && ssh beta.totoz.eu 'sudo systemctl restart totoz'
+- ``rsync -az . beta.totoz.eu:/home/totoz/app && ssh beta.totoz.eu 'sudo systemctl restart totoz'``

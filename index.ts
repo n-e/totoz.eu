@@ -13,6 +13,7 @@ const absPath = (relPath: string) => path.join(__dirname, relPath)
 const port = +(process.env['PORT'] || 3000)
 const hostname = process.env['HOSTNAME'] || '127.0.0.1'
 
+// Setup and run app
 const app = express()
 
 app.set('view engine','pug')
