@@ -1,6 +1,6 @@
 each t in totozes
     div(class='totoz')
-        span(class='name')='[:'+t+']'
+        span(class='name') [:!{t.hiName}]
         span(class='img')
-            img(src="/"+t.toLowerCase()+".gif")
-        span(class='username') -
+            img(src="/"+t.lcName+".gif")
+        span(class='username')= t.username
