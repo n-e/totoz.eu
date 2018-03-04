@@ -12,7 +12,9 @@ div(class='links')
 
 div(id='cnt')
     form(action="",id='search')
-        input(type="text", name="q", id='query',value=query,autofocus)
+        input(
+            type="text", name="q", id='query',value=query,autofocus,
+            autocomplete='off',autocorrect='off',autocapitalize='off',spellecheck='off')
     div(class='totozes')
         include fragments/totoz_list.pug
 
