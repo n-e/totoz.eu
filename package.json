@@ -6,8 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-    "build": "tsc index.ts",
-    "watch": "concurrently --kill-others 'tsc -w index.ts' 'nodemon index.js'"
+    "build": "tsc index.ts scripts/reindex.ts",
+    "watch": "concurrently --kill-others 'tsc -w index.ts scripts/reindex.ts' 'nodemon index.js'",
+    "reindex":"node scripts/reindex"
   },
   "repository": {
     "type": "git",

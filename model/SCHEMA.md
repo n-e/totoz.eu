@@ -21,5 +21,5 @@
     totozes:alpha ZSET
         <score:0> <lowercase totoz name>
     
-    totozes:2gram:<AA> SET
-        <lowercase totoz name>
+    totozes:index:2gram:<AA> SET    Index by totoz name
+        <lowercase totoz name>      TODO : add tags and user to index

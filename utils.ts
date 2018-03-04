@@ -29,3 +29,14 @@ export const highlightTerm = (str: string, term:string, className: string) => {
 export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
 }
+
+// return all the 2grams for the string
+// the ngrams are [a-z0-9]
+// CAUTION : if this is change both the index and the search must be updated
+export function ngrams(str: string) {
+    const filtered_str = str.toLowerCase().replace(/[^a-z0-9]/g,'')
+    const out: string[] = []
+    for(let i = 0; i< filtered_str.length-1; i++)
+        out.push(str.substr(i,2))
+    return out
+}
