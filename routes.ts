@@ -32,7 +32,7 @@ routes.get('/',(req, res, next) => {
                     lcName:i.name.toLowerCase(),
                     hiName:highlightTerm(i.name.toLowerCase(),query,'match')
                 }))
-                .sort((a,b)=>a.lcName<b.lcName ? 1:-1)
+                .sort((a,b)=>a.lcName<b.lcName ? -1:1)
                 .filter((e,i)=>i<120)
 
             res.render(template, {totozes: info2, query})
