@@ -1,10 +1,13 @@
-import {all_totozes_slow,index_2gram} from '../model/totoz'
+import {index_2gram, all_totozes_slow} from '../model/totoz'
 import redis = require('redis')
 
-const client = redis.createClient()
 
-all_totozes_slow(client,(err,totozes) => {
-    totozes.forEach((t,i) => {
-        index_2gram(client,t,err=>{})
-    })
-})
+async function index() {
+    const totozes = await all_totozes_slow()
+    for(let t of totozes)
+        await index_2gram(t)
+}
+
+index()
+    .then(()=>console.log('finished'))
+    .catch((reason)=>console.log(reason))
