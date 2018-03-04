@@ -8,7 +8,7 @@
     "tsc": "tsc",
     "build": "tsc index.ts scripts/reindex.ts",
     "watch": "concurrently --kill-others 'tsc -w index.ts scripts/reindex.ts' 'nodemon index.js'",
-    "reindex":"node scripts/reindex"
+    "reindex": "node scripts/reindex"
   },
   "repository": {
     "type": "git",
@@ -23,12 +23,14 @@
   "dependencies": {
     "escape-html": "^1.0.3",
     "express": "^4.16.2",
+    "morgan": "^1.9.0",
     "pug": "^2.0.0-rc.4",
     "redis": "^2.8.0"
   },
   "devDependencies": {
     "@types/escape-html": "0.0.20",
     "@types/express": "^4.11.1",
+    "@types/morgan": "^1.7.35",
     "@types/redis": "^2.8.6",
     "concurrently": "^3.5.1",
     "nodemon": "^1.17.1",
