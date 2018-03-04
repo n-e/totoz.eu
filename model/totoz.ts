@@ -30,10 +30,17 @@ export function index_2gram(client: C, totoz_id:string, cb: Cb<undefined[]>) {
     batch.exec(cb)
 }
 
+// This does an index search then a filter
+// Therefore, a totoz that can't be returned by the index (eg 1 letter) won't be returned
 export function totozes_2gram(client: C, query: string, cb: Cb<string[]>) {
     const ngs = ngrams(query)
+    const reFilter = new RegExp(query,"i")
+
     if (ngs.length>0)
-        client.sinter(...ngs.map(ng => 'totozes:index:2gram:'+ng),cb)
+        client.sinter(...ngs.map(ng => 'totozes:index:2gram:'+ng),(err,ttz)=> {
+            // filter the results : queries such as mmmmm will match mm
+            cb(err,ttz.filter(t=>t.match(reFilter)))
+        })
     else
         cb(null,[])
 }

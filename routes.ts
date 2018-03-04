@@ -12,11 +12,18 @@ const client = redis.createClient()
 
 routes.get('/',(req, res, next) => {
     const query:string = req.query.q || ''
+    let queryForIndexSearch: string
+    if (query.length == 0)
+        queryForIndexSearch = 'aa'
+    else if (query.length == 1)
+        queryForIndexSearch = query+'a'
+    else
+        queryForIndexSearch = query
 
     const totozlist_only = req.query.tlonly === "1"
     const template = totozlist_only ? 'fragments/totoz_list' : 'index'
 
-    totozes_2gram(client, query, (err, totozes) => {
+    totozes_2gram(client, queryForIndexSearch, (err, totozes) => {
         totozes_info(client, totozes, (err,info) => {
             const info2 = info
                 .filter(notEmpty)
