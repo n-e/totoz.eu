@@ -39,7 +39,7 @@ export async function all_totozes_slow(): Promise<string[]> {
 
 // match : the value to index (e.g. tag name, other metadata)
 // totoz_id : the totoz to point to
-export async function index_2gram(match:string,totoz_id:string) {
+export async function index_ngram(match:string,totoz_id:string) {
     const ngs = ngrams(match)
     const batch = client.batch()
     ngs.forEach(ng => batch.sadd('totozes:index:2gram:'+ng,totoz_id))
@@ -49,7 +49,7 @@ export async function index_2gram(match:string,totoz_id:string) {
 // This does an index search
 // Therefore, a totoz that can't be returned by the index (eg 1 letter) won't be returned
 // Also, there may be false positives (e.g. mmmm will match mm)
-export async function totozes_2gram(query: string) {
+export async function totozes_ngram(query: string) {
     const ngs = ngrams(query)
 
     if (ngs.length>0) {

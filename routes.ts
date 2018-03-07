@@ -2,7 +2,7 @@
 
 import express = require('express')
 import {incChar,highlightTerm, notEmpty} from './utils'
-import {totozes_startswith, totozes_info, totozes_2gram, TotozInfo, totoz_tags} from './model/totoz'
+import {totozes_startswith, totozes_info, totozes_ngram, TotozInfo, totoz_tags} from './model/totoz'
 import { RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
 
 const throwtonext = (f: RequestHandler) => (req: express.Request,res: express.Response,next: express.NextFunction) => {
@@ -14,17 +14,13 @@ const routes = express.Router()
 routes.get('/', throwtonext(async (req, res, next) => {
     const query:string = req.query.q || ''
     let queryForIndexSearch: string
-    if (query.length == 0)
-        queryForIndexSearch = 'aa'
-    else if (query.length == 1)
-        queryForIndexSearch = query+'a'
-    else
-        queryForIndexSearch = query
+
+    queryForIndexSearch = query + 'aaa'.substr(0,3-query.length)
 
     const totozlist_only = req.query.tlonly === "1"
     const template = totozlist_only ? 'fragments/totoz_list' : 'index'
 
-    const totozes = await totozes_2gram(queryForIndexSearch)
+    const totozes = await totozes_ngram(queryForIndexSearch)
     let info:(TotozInfo & {tags?:string[]})[] = await totozes_info(totozes)
     info = info
         .filter(notEmpty) // TODO : complain if there are empty values because it shoudl'nt happen

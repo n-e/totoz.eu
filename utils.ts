@@ -36,7 +36,7 @@ export function notEmpty<TValue>(value: TValue | null | undefined): value is TVa
 export function ngrams(str: string) {
     const filtered_str = str.toLowerCase().replace(/[^a-z0-9]/g,'')
     const out: string[] = []
-    for(let i = 0; i< filtered_str.length-1; i++)
-        out.push(filtered_str.substr(i,2))
+    for(let i = 0; i< filtered_str.length-2; i++)
+        out.push(filtered_str.substr(i,3))
     return out
 }
