@@ -37,6 +37,6 @@ export function ngrams(str: string) {
     const filtered_str = str.toLowerCase().replace(/[^a-z0-9]/g,'')
     const out: string[] = []
     for(let i = 0; i< filtered_str.length-1; i++)
-        out.push(str.substr(i,2))
+        out.push(filtered_str.substr(i,2))
     return out
 }

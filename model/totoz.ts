@@ -1,7 +1,7 @@
 import redis = require('redis')
 import {ngrams, incChar} from '../utils'
 import {promisify} from 'util'
-interface TotozInfo {name: string, username: string, created: string, changed: string, nsfw: string}
+export interface TotozInfo {name: string, username: string, created: string, changed: string, nsfw: string}
 type C = redis.RedisClient
 type Cb<T> = redis.Callback<T>
 
@@ -21,8 +21,8 @@ const execA = promisify(client.batch().exec)
 
 /* MISC GETTERS */
 
-function get_tags(totoz_id: string) {
-    return client.smembersA(totoz_id)
+export function totoz_tags(totoz_id: string): Promise<string[]> {
+    return client.smembersA('totoz:tags:'+totoz_id)
 }
 
 export function totozes_info(totozes: string[]):Promise<TotozInfo[]> { // TODO : test + TODO check results are the right format
@@ -37,23 +37,24 @@ export async function all_totozes_slow(): Promise<string[]> {
 
 /* 2GRAM INDEXING AND SEARCH */
 
-export async function index_2gram(totoz_id:string) {
-    const ngs = ngrams(totoz_id)
+// match : the value to index (e.g. tag name, other metadata)
+// totoz_id : the totoz to point to
+export async function index_2gram(match:string,totoz_id:string) {
+    const ngs = ngrams(match)
     const batch = client.batch()
     ngs.forEach(ng => batch.sadd('totozes:index:2gram:'+ng,totoz_id))
     await execA.call(batch)
 }
 
-// This does an index search then a filter
+// This does an index search
 // Therefore, a totoz that can't be returned by the index (eg 1 letter) won't be returned
+// Also, there may be false positives (e.g. mmmm will match mm)
 export async function totozes_2gram(query: string) {
     const ngs = ngrams(query)
-    const reFilter = new RegExp(query,"i")
 
     if (ngs.length>0) {
         const ttz:string[] = await client.sinterA(...ngs.map(ng => 'totozes:index:2gram:'+ng))
-        // filter the results : queries such as mmmmm will match mm
-        return ttz.filter(t=>t.match(reFilter))
+        return ttz
     }
     else
         return []

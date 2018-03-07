@@ -4,3 +4,8 @@ each t in totozes
         span(class='img')
             img(src="/"+t.lcName+".gif")
         span(class='username')= t.username
+        if t.hiTags.length > 0
+            span(class='tags')
+                each tag in t.hiTags
+                    span !{tag}
+                    = ' '
