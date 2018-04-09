@@ -7,6 +7,14 @@
     npm install
     npm run watch
 
+## Import totoz metadata
+
+1) Get a totoz metadata json file (ask me)
+2) Import it: ``scripts/bulk_import.sh [totoz file]| redis-cli``
+3) Do the initial indexing: ``npm run reindex``
+
+To avoid broken images on a dev box without the image collection set the NOIMAGES environment variable to 1
+
 ## Official server
 
 [https://beta.totoz.eu](https://beta.totoz.eu)
