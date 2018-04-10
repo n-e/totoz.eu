@@ -55,7 +55,7 @@ h1 {
     border:1px solid #ccc;
 }
 
-.totozes {
+.totoz_list {
     display: flex;
     flex-wrap: wrap;
 }
@@ -73,6 +73,8 @@ h1 {
 }
 
 .match {background:#ffff00}
+/*.match2 {background:#0f0}
+.match3 {background:#0ff}*/
 
 .totoz > * {
     padding: 3px 0;

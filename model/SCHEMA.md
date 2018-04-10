@@ -14,12 +14,12 @@
         ALL VALUES ARE MANDATORY
     
     totoz:tags:<lowercase totoz name> SET
-        <tag name as-is>
+        <tag name as-is>    TODO: what characters may tags contain?
 
 ### Calculated Data
 
     totozes:alpha ZSET
         <score:0> <lowercase totoz name>
     
-    totozes:index:2gram:<AA> SET    Index by totoz name
-        <lowercase totoz name>      TODO : add tags and user to index
+    totozes:index:3gram:<AAA|'12'> SET    Index by totoz name and tags
+        <lowercase totoz name>

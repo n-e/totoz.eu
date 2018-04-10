@@ -3,11 +3,10 @@ import hescape = require('escape-html')
 export const incChar = (s:string) => String.fromCharCode(s.charCodeAt(0)+1)
 
 // Returns a string with the term in a span with the provided class
-// str is unescaped and is escaped during the highlighting process
-// className isn't sanitized
+// None of the input variables are sanitized
 export const highlightTerm = (str: string, term:string, className: string) => {
     if(term.length == 0)
-        return hescape(str)
+        return str
 
     let pos = 0, next_pos = 0, out = ""
     while(pos != -1) {
@@ -18,7 +17,7 @@ export const highlightTerm = (str: string, term:string, className: string) => {
             pos += term.length
         }
         else {
-            out += hescape(str.substr(pos,(next_pos == -1) ? undefined : (next_pos-pos)))
+            out += (str.substr(pos,(next_pos == -1) ? undefined : (next_pos-pos)))
             pos = next_pos
         }
     }
@@ -26,17 +25,24 @@ export const highlightTerm = (str: string, term:string, className: string) => {
     return out
 }
 
-export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-    return value !== null && value !== undefined;
+export const highlightTerms = (str: string, terms:string[], className: string) => {
+    const unique_terms = Array.from(new Set(terms))
+    let out = str
+    let i = 0
+    for (let t of terms)
+        out = highlightTerm(out,t,className + ' ' + className + ++i)
+    return out
 }
 
-// return all the 2grams for the string
-// the ngrams are [a-z0-9]
-// CAUTION : if this is change both the index and the search must be updated
-export function ngrams(str: string) {
-    const filtered_str = str.toLowerCase().replace(/[^a-z0-9]/g,'')
-    const out: string[] = []
-    for(let i = 0; i< filtered_str.length-2; i++)
-        out.push(filtered_str.substr(i,3))
-    return out
+// highlight terms, escaping appropriately the input
+export const highlightTermsSafe = (str: string, terms:string[], className: string) => {
+    return highlightTerms(
+        hescape(str),
+        terms.map(t => hescape(t)),
+        hescape(className)
+    )
+}
+
+export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+    return value !== null && value !== undefined;
 }
