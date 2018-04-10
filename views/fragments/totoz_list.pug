@@ -1,4 +1,7 @@
 p Showing #{results_info.shown} of #{results_info.count_txt}
+    if results_info.shown != results_info.count
+        = ' '
+        a(href=results_info.showall_url) Show all
 
 div(class='totoz_list')
     each t in totozes

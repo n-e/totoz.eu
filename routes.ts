@@ -1,6 +1,8 @@
 // All the routes for the totoz.eu server
 
 import express = require('express')
+import hescape = require('escape-html')
+
 import {incChar,highlightTerm, notEmpty, highlightTerms} from './utils'
 import {totozes_startswith, totozes_info, totozes_ngram, TotozInfo, totoz_tags} from './model/totoz'
 import { RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
@@ -44,14 +46,15 @@ routes.get('/', throwtonext(async (req, res, next) => {
     // QUERY PARAMETER 1: query string (optional)
     const query:string = req.query.q || ''
 
-    
     // QUERY PARAMETER 2: tlonly (optional)
-    // if it is set, only send the html fragment that contains the totoz list.
+    // if set to 1, only send the html fragment that contains the totoz list.
     // Otherwise send the full page.
     // This is used for refreshing the search results during find as you type
     const totozlist_only = req.query.tlonly === "1"
     const template = totozlist_only ? 'fragments/totoz_list' : 'index'
 
+    // QUERY PARAMETER 2: showall (optional)
+    const showall = req.query.showall === '1'
     
     let info = await search(query)
 
@@ -67,13 +70,14 @@ routes.get('/', throwtonext(async (req, res, next) => {
                 : []
         }))
         .sort((a,b)=>a.lcName<b.lcName ? -1:1)
-        .filter((e,i)=>i<120)
+        .filter((e,i)=> i<120 || showall)
     
     const truncated_results = query.split(' ').some(kw => kw.length < 3) // TODO move near the search function
     const results_info = {
         shown: info2.length,
         count: info.length,
-        count_txt : truncated_results ? 'more than ' + info.length : '' + info.length,
+        count_txt: truncated_results ? 'more than ' + info.length : '' + info.length,
+        showall_url: '/?q=' + hescape(query) + '&showall=1'
     }
 
     res.render(template, {totozes: info2, query, results_info})
