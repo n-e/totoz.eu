@@ -62,6 +62,7 @@ routes.get('/', throwtonext(async (req, res, next) => {
         .map(i=> ({ 
             ...i, // TODO : clean this shit
             lcName:i.name.toLowerCase(),
+            detailsUrl: '/totoz/' + i.name.toLowerCase(),
             hiName:highlightTerms(i.name.toLowerCase(),query.split(' '),'match'),
             hiTags:(i.tags != undefined && query != '') ?
                 i.tags
@@ -80,7 +81,24 @@ routes.get('/', throwtonext(async (req, res, next) => {
         showall_url: '/?q=' + hescape(query) + '&showall=1'
     }
 
-    res.render(template, {totozes: info2, query, results_info})
+    res.render(template, {totozes: info2, query, results_info, body_id:'index'})
+}))
+
+routes.get('/totoz/:totoz?', throwtonext(async (req, res, next) => {
+    const totoz_name:string = req.params.totoz || ''
+    const [totoz_info] = await totozes_info([totoz_name.toLowerCase()])
+
+    if (!totoz_info || totoz_info.name === undefined)
+        return next()
+    
+    const tags = await totoz_tags(totoz_name.toLocaleLowerCase())
+    
+    res.render('totoz', {
+        ...totoz_info,
+        tags,
+        body_id:'totoz',
+        page_title: '[:' + totoz_name + ']',
+    })
 }))
 
 export default routes

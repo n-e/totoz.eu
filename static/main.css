@@ -15,13 +15,17 @@ body {
     margin:0;
 }
 
+
 .links {
     background:#fff;
     margin-top:0;
-    padding: 12px 16px 12px 12px;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     /* border-left:3px solid #0af; */
+}
+
+.links > *:not(h1), .links > h1 > a {
+    padding: 12px 16px 12px 12px;
 }
 
 .links > span {
@@ -38,8 +42,19 @@ h1 {
     font-size:22px;
 }
 
+.links > h1 > a {
+    display: block;
+    color:inherit;
+    text-decoration: inherit;
+}
+
+body#totoz #cnt {
+    text-align: center;
+}
+
 #cnt {
     padding: 0px 12px;
+    margin:24px 0;
 }
 
 #search {
@@ -59,6 +74,19 @@ h1 {
     display: flex;
     flex-wrap: wrap;
 }
+
+.unique_totoz {
+    display: inline-block;
+}
+
+.totoz_list .totoz {
+    width:94px;
+}
+
+.unique_totoz .totoz {
+    padding:8px 24px;
+}
+
 .totoz {
     display: flex;
     flex-direction: column;
@@ -67,7 +95,6 @@ h1 {
     margin: 2px;
     padding:2px 2px 3px;
     background: #fff;
-    width:94px;
     overflow: hidden;
     box-shadow:0 2px 2px 0 rgba(0, 0, 0, 0.1);
 }
@@ -85,10 +112,12 @@ h1 {
     position:relative;
 }
 
-.totoz img {
+.totoz_list .totoz img {
     max-width: 90px;
     max-height: 80px;
-    xorder:-1;
+}
+
+.totoz img {
 }
 
 

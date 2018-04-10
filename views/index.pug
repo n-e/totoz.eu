@@ -1,16 +1,6 @@
-html(lang="en")
-    head
-        meta(charset="UTF-8")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        meta(http-equiv="X-UA-Compatible", content="ie=edge")
-        link(rel="stylesheet", href="/main.css")
-        script(src="index.js")
-        title Totoz.eu Beta
+extends layout.pug
 
-div(class='links')
-    h1 Totoz.eu Beta
-
-div(id='cnt')
+block content
     form(action="",id='search')
         input(
             type="text", name="q", id='query',value=query,autofocus,
@@ -18,9 +8,3 @@ div(id='cnt')
     div(class='totozes')
         include fragments/totoz_list.pug
 
-
-div(class='about')
-    =' Contact | '
-    a(href="https://github.com/n-e/totoz.eu") Github
-    =' | '
-    a(href='design/index.html') Index Mockup

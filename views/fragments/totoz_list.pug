@@ -7,7 +7,7 @@ div(class='totoz_list')
     each t in totozes
         div(class='totoz')
             span(class='name') [:!{t.hiName}]
-            span(class='img')
+            a(class='img',href=t.detailsUrl)
                 img(src="/"+t.lcName+".gif")
             span(class='username')= t.username
             if t.hiTags.length > 0

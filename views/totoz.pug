@@ -1,0 +1,25 @@
+extends layout.pug
+
+block content
+    div(class='unique_totoz')
+        div(class='totoz')
+                span(class='name') [:!{name}]
+                span(class='img')
+                    img(src="/"+name.toLowerCase()+".gif")
+                span(class='username')= username
+                if tags.length > 0
+                    span(class='tags')
+                        each tag in tags
+                            a(href='/?q='+tag) #{tag}
+                            = ' '
+                span
+                    strong Créé le : 
+                    = created
+                span
+                    strong Modifié le : 
+                    = changed
+                span
+                    if nsfw='0'
+                        | SFW
+                    else
+                        | NSFW
