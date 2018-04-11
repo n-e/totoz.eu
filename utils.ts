@@ -10,10 +10,10 @@ export const highlightTerm = (str: string, term:string, className: string) => {
 
     let pos = 0, next_pos = 0, out = ""
     while(pos != -1) {
-        next_pos = str.indexOf(term,pos)
+        next_pos = lcase(str).indexOf(lcase(term),pos)
 
         if (next_pos == pos) {
-            out += `<span class="${className}">${term}</span>`
+            out += `<span class="${className}">${str.substr(pos,term.length)}</span>`
             pos += term.length
         }
         else {
@@ -46,3 +46,7 @@ export const highlightTermsSafe = (str: string, terms:string[], className: strin
 export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
 }
+
+// returns a lowercase copy of str
+// It's useful because String.prototype.toLowerCase mutates the string
+export const lcase = (str:string) => (''+str).toLowerCase()

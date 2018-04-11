@@ -3,7 +3,7 @@
 import express = require('express')
 import hescape = require('escape-html')
 
-import {incChar,highlightTerm, notEmpty, highlightTerms} from './utils'
+import {incChar,highlightTerm, notEmpty, highlightTerms, highlightTermsSafe, lcase} from './utils'
 import {totozes_startswith, totozes_info, totozes_ngram, TotozInfo, totoz_tags} from './model/totoz'
 import { RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
 
@@ -37,8 +37,8 @@ async function search(query: string) {
         return info
     else
         return info.filter(i => keywords.every(
-            k=>i.name.indexOf(k)>=0 ||
-            i.tags!.some(t => t.indexOf(k)>=0)))
+            k=>lcase(i.name).indexOf(lcase(k))>=0 ||
+            i.tags!.some(t => lcase(t).indexOf(lcase(k))>=0)))
 
 }
 
@@ -63,10 +63,10 @@ routes.get('/', throwtonext(async (req, res, next) => {
             ...i, // TODO : clean this shit
             lcName:i.name.toLowerCase(),
             detailsUrl: '/totoz/' + i.name.toLowerCase(),
-            hiName:highlightTerms(i.name.toLowerCase(),query.split(' '),'match'),
+            hiName:highlightTermsSafe(i.name,query.split(' '),'match'),
             hiTags:(i.tags != undefined && query != '') ?
                 i.tags
-                    .map(t=>highlightTerms(t,query.split(' '),'match'))
+                    .map(t=>highlightTermsSafe(t,query.split(' '),'match'))
                     .filter(t=>query.split(' ').some( kw => kw .length > 0 && t.indexOf(kw)>=0))
                 : []
         }))
