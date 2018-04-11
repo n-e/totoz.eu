@@ -25,4 +25,5 @@
         <lowercase totoz name>
     
     totozes:index:byuser:<totoz_id=lowercase user name> SET  TODO check user names are really case unique
+                                                        Note: the username may be empty
         <lowercase totoz name>

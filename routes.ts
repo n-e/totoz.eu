@@ -4,7 +4,7 @@ import express = require('express')
 import hescape = require('escape-html')
 
 import {incChar,highlightTerm, notEmpty, highlightTerms, highlightTermsSafe, lcase} from './utils'
-import {totozes_startswith, totozes_info, totozes_ngram, TotozInfo, totoz_tags} from './model/totoz'
+import {totozes_startswith, totozes_info, totozes_ngram, TotozInfo, totoz_tags, totozes_byuser} from './model/totoz'
 import { RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
 
 const throwtonext = (f: RequestHandler) => (req: express.Request,res: express.Response,next: express.NextFunction) => {
@@ -84,21 +84,48 @@ routes.get('/', throwtonext(async (req, res, next) => {
     res.render(template, {totozes: info2, query, results_info, body_id:'index'})
 }))
 
-routes.get('/totoz/:totoz?', throwtonext(async (req, res, next) => {
-    const totoz_name:string = req.params.totoz || ''
-    const [totoz_info] = await totozes_info([totoz_name.toLowerCase()])
+routes.get('/totoz/:totoz_id?', throwtonext(async (req, res, next) => {
+    const totoz_id:string = req.params.totoz_id || ''
+    const [totoz_info] = await totozes_info([totoz_id])
 
     if (!totoz_info || totoz_info.name === undefined)
         return next()
     
-    const tags = await totoz_tags(totoz_name.toLocaleLowerCase())
+    const tags = await totoz_tags(totoz_id)
     
     res.render('totoz', {
         ...totoz_info,
         tags,
         body_id:'totoz',
-        page_title: '[:' + totoz_name + ']',
+        page_title: '[:' + totoz_id + ']',
     })
+}))
+
+routes.get('/user/:user_id?', throwtonext(async (req, res, next) => {
+    const showall = req.query.showall === '1'
+    const user_id:string = req.params.user_id || ''
+    const user_totozes = await totozes_byuser(user_id)
+    // TODO: bail if user not found
+
+    const tinfo = await totozes_info(user_totozes)
+
+    const tinfo2 = tinfo
+        .map(t => ({
+            ...t,
+            hiTags: [],
+            hiName: t.name,
+            lcName:t.name.toLowerCase(),
+            detailsUrl: '/totoz/' + t.name.toLowerCase(),
+        }))
+        .filter((t,i)=>i<120 || showall)
+    const results_info = {
+        shown: tinfo2.length,
+        count: tinfo.length,
+        count_txt: 0 ? 'more than ' + tinfo.length : '' + tinfo.length,
+        showall_url: '/user/' + user_id + '?showall=1'
+    }
+
+    res.render('user', {user_id, results_info,totozes: tinfo2})
 }))
 
 export default routes

@@ -1,5 +1,5 @@
 [Service]
-ExecStart=/usr/bin/node /home/totoz/app/index.js
+ExecStart=/usr/bin/node /home/totoz/app/build/index.js
 Restart=always
 StandardOutput=syslog
 StandardError=syslog

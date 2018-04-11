@@ -98,12 +98,12 @@ export function totozes_startswith(start: string) { // TODO : test
 export async function index_byuser(totoz_id:string) {
     const [info] = await totozes_info([totoz_id])
 
-    if(!info || !info.username)
+    if(!info || info.username === undefined)
         throw new Error('Invalid totoz: ' + totoz_id)
 
     await client.saddA('totozes:index:byuser:'+info.username.toLowerCase(),totoz_id)
 }
 
-export function totozes_byuser(user_id: string) {
+export function totozes_byuser(user_id: string): string[] {
     return client.smembersA('totozes:index:byuser:' + user_id)
 }

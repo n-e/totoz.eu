@@ -6,7 +6,7 @@ block content
                 span(class='name') [:!{name}]
                 span(class='img')
                     img(src="/"+name.toLowerCase()+".gif")
-                span(class='username')= username
+                a(class='username',href='/user/' + username.toLowerCase())= username
                 if tags.length > 0
                     span(class='tags')
                         each tag in tags

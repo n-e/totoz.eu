@@ -93,7 +93,7 @@ body#totoz #cnt {
     align-items: center;
     justify-content: space-between;
     margin: 2px;
-    padding:2px 2px 3px;
+    padding:2px 0 3px;
     background: #fff;
     overflow: hidden;
     box-shadow:0 2px 2px 0 rgba(0, 0, 0, 0.1);
@@ -104,7 +104,7 @@ body#totoz #cnt {
 .match3 {background:#0ff}*/
 
 .totoz > * {
-    padding: 3px 0;
+    padding: 3px;
     text-align: center;
 }
 
@@ -121,7 +121,6 @@ body#totoz #cnt {
 }
 
 
-
 .totoz .name {
 
 }
@@ -129,6 +128,7 @@ body#totoz #cnt {
 .totoz .username {
     color: #777;
     font-size:11px;
+    text-decoration: inherit;
 }
 
 .about {
