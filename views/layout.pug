@@ -15,6 +15,15 @@ html(lang="en")
         div(class='links')
             h1
                 a(href='/') Totoz.eu Beta
+            span(class='spc')
+            if sfw
+                a(href=nsfw_url,class='sfw_status sfw')
+                    span(class='nohover') SFW
+                    span(class='hover') Go to NSFW
+            else
+                a(href=sfw_url,class='sfw_status nsfw')
+                    span(class='nohover') NSFW
+                    span(class='hover') Go to SFW
 
         div(id='cnt')
             block content

@@ -21,6 +21,7 @@ body {
     margin-top:0;
     display: flex;
     align-items: stretch;
+    line-height: 26px; /* Same as the title to align items*/
     /* border-left:3px solid #0af; */
 }
 
@@ -42,9 +43,37 @@ h1 {
     font-size:22px;
 }
 
+.links .sfw_status:not(:hover) {
+    color:inherit
+}
+
+.sfw_status .hover {
+    display: none;
+}
+
+.sfw_status .nohover {
+}
+
+.sfw_status:hover .hover, .sfw_status:active .hover  {
+    display: initial;
+}
+
+.sfw_status:hover .nohover, .sfw_status:active .nohover {
+    display: none;
+}
+
+.sfw_status.nsfw .nohover {
+    color: #cc0000;
+    font-weight: bold;
+}
+
 .links > h1 > a {
     display: block;
     color:inherit;
+    text-decoration: inherit;
+}
+
+.links > a {
     text-decoration: inherit;
 }
 
@@ -114,21 +143,25 @@ body#totoz #cnt {
 
 .totoz_list .totoz img {
     max-width: 90px;
-    max-height: 80px;
 }
 
-.totoz img {
+.totoz .nsfw_img {
+    width:67px;
+    height:50px;
+    line-height: 50px;
+    border:1px solid red;
+    color:red;
+    background: #ffcccc;
 }
 
 
-.totoz .name {
-
+.totoz > * {
+    text-decoration: none;
 }
 
 .totoz .username {
     color: #777;
     font-size:11px;
-    text-decoration: inherit;
 }
 
 .about {

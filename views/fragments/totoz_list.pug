@@ -8,7 +8,10 @@ div(class='totoz_list')
         div(class='totoz')
             span(class='name') [:!{t.hiName}]
             a(class='img',href=t.detailsUrl)
-                img(src="/"+t.lcName+".gif")
+                if t.nsfw=='0' || !sfw
+                    img(src="/"+t.lcName+".gif")
+                else
+                    div(class='nsfw_img') NSFW
             a(class='username',href='/user/' + t.username.toLowerCase())= t.username
             if t.hiTags.length > 0
                 span(class='tags')

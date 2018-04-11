@@ -13,6 +13,26 @@ const throwtonext = (f: RequestHandler) => (req: express.Request,res: express.Re
 
 const routes = express.Router()
 
+routes.use((req,res,next) => {
+    const force_nsfw = req.query.force_nsfw === '1' // for debugging on localhost
+
+    if (force_nsfw)
+        res.locals.sfw = false
+    else
+        res.locals.sfw = ! (req.headers.host || '').match(/nsfw.*\.totoz\.eu$/)
+
+    if ((req.headers.host || '').match(/totoz.eu$/)) {
+        res.locals.sfw_url = 'https://beta.totoz.eu' +  req.url
+        res.locals.nsfw_url = 'https://nsfw.beta.totoz.eu' + req.url
+    } else {
+        const chr = req.url.match(/\?/) ? '&' : '?' // Crude but good enough for debugging
+        res.locals.sfw_url = req.url.replace(/.force_nsfw=1/,'')
+        res.locals.nsfw_url = req.url + chr + 'force_nsfw=1'
+    }
+    
+    next()
+})
+
 // query: the query string as typed by the user
 // If the query has a length of 0: TODO
 // If the query has keywords: return totozes that match all keywords exactly
