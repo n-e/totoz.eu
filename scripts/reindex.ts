@@ -1,4 +1,4 @@
-import {index_ngram, all_totozes_slow, totoz_tags} from '../model/totoz'
+import {index_ngram, all_totozes_slow, totoz_tags, index_byuser} from '../model/totoz'
 import redis = require('redis')
 
 /*
@@ -16,6 +16,8 @@ async function index() {
         const tags = await totoz_tags(t)
         for (let tt of tags)
             await index_ngram(tt,t)
+        
+        await index_byuser(t)
     }
 }
 

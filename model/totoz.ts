@@ -6,7 +6,7 @@ type C = redis.RedisClient
 type Cb<T> = redis.Callback<T>
 
 // ugly global but good enough for a not-so-reusable app
-const client = promisifyRedisClient(redis.createClient())
+export const client = promisifyRedisClient(redis.createClient())
 
 function promisifyRedisClient(client: redis.RedisClient): (redis.RedisClient & {[index:string]:any}) {
     const c: (redis.RedisClient & {[index:string]:any}) = client
@@ -14,6 +14,7 @@ function promisifyRedisClient(client: redis.RedisClient): (redis.RedisClient & {
     c.sinterA= promisify(c.sinter)
     c.zrangebylexA= promisify(c.zrangebylex)
     c.keysA = promisify(c.keys)
+    c.saddA = promisify(c.sadd)
     return c
 }
 
@@ -25,9 +26,9 @@ export function totoz_tags(totoz_id: string): Promise<string[]> {
     return client.smembersA('totoz:tags:'+totoz_id)
 }
 
-export function totozes_info(totozes: string[]):Promise<TotozInfo[]> { // TODO : test + TODO check results are the right format
+export function totozes_info(totoz_ids: string[]):Promise<TotozInfo[]> { // TODO : test + TODO check results are the right format
     const b = client.batch()
-    totozes.forEach(t => b.hgetall('totoz:meta:'+t.toLowerCase()))
+    totoz_ids.forEach(t => b.hgetall('totoz:meta:'+t))
     return execA.call(b) // TODO : Crap, we lose typings
 }
 
@@ -90,4 +91,19 @@ export function totozes_startswith(start: string) { // TODO : test
     const rangeend = start.length == 0 ? '+' : '('+start.replace(/.$/, incChar)
 
     return client.zrangebylexA.call(client,'totozes:alpha', rangestart, rangeend,"LIMIT",0,100)
+}
+
+/* BY USER SEARCH */
+
+export async function index_byuser(totoz_id:string) {
+    const [info] = await totozes_info([totoz_id])
+
+    if(!info || !info.username)
+        throw new Error('Invalid totoz: ' + totoz_id)
+
+    await client.saddA('totozes:index:byuser:'+info.username.toLowerCase(),totoz_id)
+}
+
+export function totozes_byuser(user_id: string) {
+    return client.smembersA('totozes:index:byuser:' + user_id)
 }
