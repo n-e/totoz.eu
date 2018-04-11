@@ -21,10 +21,10 @@ const noimages = process.env['NOIMAGES'] ? true : false
 const app = express()
 
 app.set('view engine','pug')
-app.set('views',absPath('views'))
+app.set('views',absPath('../views'))
 
-if(noimages) app.get(/\.gif$/,(req,res)=>res.sendFile(absPath('static/uxam.gif')))
-app.use(express.static(absPath('static')))
+if(noimages) app.get(/\.gif$/,(req,res)=>res.sendFile(absPath('../static/uxam.gif')))
+app.use(express.static(absPath('../static')))
 if(app.get('env')=='development') app.use(morgan('tiny'))
 app.use('/', router)
 

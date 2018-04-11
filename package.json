@@ -2,12 +2,12 @@
   "name": "totoz.eu",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "watch": "concurrently --kill-others 'tsc -w' 'nodemon index.js'",
-    "reindex": "node scripts/reindex"
+    "reindex": "node build/scripts/reindex"
   },
   "repository": {
     "type": "git",
