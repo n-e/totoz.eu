@@ -1,0 +1,59 @@
+<totoz-10.json jq -r '.totozes[]|["HMSET","totoz:"+.name,.username,.created,.changed,.nsfw]|@sh'|redis-cli
+
+## all totoz characters
+<totoz.json jq -r '.totozes[].name'| fold -w1|sort -u
+
+## Search
+<totoz.json jq -r '.totozes|map(select(.name|contains("①")))'
+
+
+## analysis of the see archive
+ <../totoz.json jq -r '.totozes[].name'|tr 'A-Z' 'a-z'|sed 's/$/.gif/'|sort >> ttz
+comm -13 ttz gif|sed 's#^\(.*\)\.gif$#https://nsfw.totoz.eu/totoz/\1/info.json#'|sed 's/ /%20/g'|xargs -n1 curl -f > ../totoz-nsfw.json
+
+# Format nsfw totozes for import
+<../totoz-nsfw.json jq '{totozes:[.|{name:.name,created:.created,changed:.created,nsfw:.nsfw,tags:[.tags[]]}]}'
+
+
+
+## Importing data from the old totoz.eu
+
+Metadata (sfw) :
+    https://totoz.eu/latest.json?count=100000 -> totoz.json
+    bulk_import.sh| redis-cli
+
+Metadata (nsfw) :
+    Comparison between the sfw data and the gif filenames -> totoz-nsfw.json
+    <../totoz.json jq -r '.totozes[].name'|tr 'A-Z' 'a-z'|sed 's/$/.gif/'|sort >> ttz
+    comm -13 ttz gif|sed 's#^\(.*\)\.gif$#https://nsfw.totoz.eu/totoz/\1/info.json#'|sed 's/ /%20/g'|xargs -n1 curl -f > ../totoz-nsfw.json
+
+    # Format nsfw totozes for import
+    <../totoz-nsfw.json jq '{totozes:[.|{name:.name,created:.created,changed:.created,nsfw:.nsfw,tags:[.tags[]]}]}'
+    v2 : <../totoz-nsfw.json jq -s '{totozes:[.[]|{name:.name,username:.username,created:.created,changed:.created,nsfw:.nsfw,tags:[.tags[]]}]}'
+Images :
+    totoz.tgz (sent by seeschloss)
+    No massaging was needed except copying ".gif" from an other archive.
+
+What's left behind :
+
+Left: missing image, right: missing metadata
+
+    .gif
+    admin.gif
+        bsidian-.gif    <= next lines: the "real totozes" start with an o e.g. obsidian
+        bsidian-:1.gif
+        dysseus-.gif
+        dysseus-:1.gif
+        dysseus-:2.gif
+        dysseus-:3.gif
+        dysseus-:4.gif
+        dysseus-:5.gif <= end starting with o
+        epita.gif      <= partially deleted
+        epitech.gif    <= partially deleted
+        odusseus:5.gif <= missing
+        pera-.gif      <= the "real totoz" starts with an o
+        pera-:1.gif    <= the "real totoz" starts with an o
+        vous l'savez:4.gif <= récupéré
+        w-.gif         <= missing
+
+What's left to do : import totozes created between march 1st 2018 and the deployment

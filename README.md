@@ -9,7 +9,7 @@
 
 ## Import totoz metadata
 
-1) Get a totoz metadata json file (ask me)
+1) Get a totoz metadata json file (migration/*.json)
 2) Import it: ``scripts/bulk_import.sh [totoz file]| redis-cli``
 3) Do the initial indexing: ``npm run reindex``
 
