@@ -2,4 +2,8 @@ extends layout.pug
 
 block content
     h2= user_id
+    if user && user.name.toLowerCase() == user_id
+        a(href="/logout") Logout
+        =' '
+        a(href='/create_totoz') Create a totoz
     include fragments/totoz_list

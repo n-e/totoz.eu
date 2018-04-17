@@ -3,8 +3,8 @@
 import express = require('express')
 import hescape = require('escape-html')
 
-import {incChar,highlightTerm, notEmpty, highlightTerms, highlightTermsSafe, lcase} from './utils'
-import {totozes_startswith, totozes_info, totozes_ngram, TotozInfo, totoz_tags, totozes_byuser} from './model/totoz'
+import {incChar,highlightTerm, notEmpty, highlightTerms, highlightTermsSafe, lcase} from '../utils'
+import {totozes_startswith, totozes_info, totozes_ngram, TotozInfo, totoz_tags, totozes_byuser} from '../model/totoz'
 import { RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
 
 const throwtonext = (f: RequestHandler) => (req: express.Request,res: express.Response,next: express.NextFunction) => {
@@ -13,25 +13,6 @@ const throwtonext = (f: RequestHandler) => (req: express.Request,res: express.Re
 
 const routes = express.Router()
 
-routes.use((req,res,next) => {
-    const force_nsfw = req.query.force_nsfw === '1' // for debugging on localhost
-
-    if (force_nsfw)
-        res.locals.sfw = false
-    else
-        res.locals.sfw = ! (req.headers.host || '').match(/nsfw.*\.totoz\.eu$/)
-
-    if ((req.headers.host || '').match(/totoz.eu$/)) {
-        res.locals.sfw_url = 'https://beta.totoz.eu' +  req.url
-        res.locals.nsfw_url = 'https://nsfw.beta.totoz.eu' + req.url
-    } else {
-        const chr = req.url.match(/\?/) ? '&' : '?' // Crude but good enough for debugging
-        res.locals.sfw_url = req.url.replace(/.force_nsfw=1/,'')
-        res.locals.nsfw_url = req.url + chr + 'force_nsfw=1'
-    }
-    
-    next()
-})
 
 // query: the query string as typed by the user
 // If the query has a length of 0: TODO

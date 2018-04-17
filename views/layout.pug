@@ -16,6 +16,10 @@ html(lang="en")
             h1
                 a(href='/') Totoz.eu Beta
             span(class='spc')
+            if user
+                a(href="/user/"+user.name.toLowerCase())= user.name
+            else
+                a(href='/login') Log in
             if sfw
                 a(href=nsfw_url,class='sfw_status sfw')
                     span(class='nohover') SFW

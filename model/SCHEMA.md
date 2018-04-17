@@ -27,3 +27,14 @@
     totozes:index:byuser:<totoz_id=lowercase user name> SET  TODO check user names are really case unique
                                                         Note: the username may be empty
         <lowercase totoz name>
+
+
+## Users
+
+### Normalized data
+
+    user:meta:<user_id: lowecase username> HMAP
+        name:       mixed-case username
+        password:   password hash TODO format
+        email:
+        created:

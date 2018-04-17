@@ -15,6 +15,7 @@ function promisifyRedisClient(client: redis.RedisClient): (redis.RedisClient & {
     c.zrangebylexA= promisify(c.zrangebylex)
     c.keysA = promisify(c.keys)
     c.saddA = promisify(c.sadd)
+    c.hgetallA = promisify(c.hgetall)
     return c
 }
 
