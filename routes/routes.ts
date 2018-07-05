@@ -6,6 +6,7 @@ import hescape = require('escape-html')
 import {incChar,highlightTerm, notEmpty, highlightTerms, highlightTermsSafe, lcase} from '../utils'
 import { RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
 import { pool } from '../db';
+import { react } from 'babel-types';
 
 const throwtonext = (f: RequestHandler) => (req: express.Request,res: express.Response,next: express.NextFunction) => {
     Promise.resolve(f(req,res,next)).catch(next)
@@ -26,11 +27,11 @@ async function search(query: string,limit:number|'ALL'):
 
     let sql,bind:any[]
     if (keywords.length == 0) {
-        sql = `select name,user_name,tags from totozv order by created desc`
+        sql = `select name,nsfw,user_name,tags from totozv order by created desc`
         bind = []
     }
     else {
-        sql = `select name,user_name,tags from totozv where name ~* all ($1)`
+        sql = `select name,nsfw,user_name,tags from totozv where name ~* all ($1)`
         bind = [keywords]
     }
     sql += ' limit ' + limit
@@ -127,6 +128,21 @@ routes.get('/user/:user_id?', throwtonext(async (req, res, next) => {
     }
 
     res.render('user', {user_id, results_info,totozes: tinfo2})
+}))
+
+routes.get('/:name.gif',throwtonext(async (req,res,next) => {
+    const result = await pool.query(
+        'select nsfw,image from totoz where name = $1',
+        [req.params.name]
+    )
+    if (result.rowCount == 0)
+        next()
+    else if (result.rows[0].nsfw && res.locals.sfw)
+        res.status(404).send('This totoz is NSFW and you are on the SFW site')
+    else if (result.rows[0].image == null)
+        res.status(404).send('This totoz has no image')
+    else
+        res.type('gif').send(result.rows[0].image)
 }))
 
 export default routes

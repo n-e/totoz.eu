@@ -18,6 +18,14 @@
 3) Do the same for tags:
     - ``jq -r '.totozes[]|.name as $n|.tags[]|[$n,.]|@csv' totoz.json``
     - ``\copy tags(totoz_name,name) from 'ttz.csv' with (format 'csv');``
+4) Do the same for images :
+    - ``IFS='\n' find . -name "*.gif"|while read i;do (basename -s .gif -- "$i";echo ',\x'; xxd -p -- "$i")|tr -d '\n';echo ''; done``
+    -
+        ``
+        create temporary table im(name varchar(512),image bytea);
+        \copy im(name,image) from 'totoz/im.csv' with (format 'csv');
+        update totoz set image = im.image from im where lower(totoz.name) = lower(im.name);
+        ``
 
 ## Official server
 
