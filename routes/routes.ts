@@ -27,7 +27,7 @@ async function search(query: string,limit:number|'ALL'):
 
     let sql,bind:any[]
     if (keywords.length == 0) {
-        sql = `select name,nsfw,user_name,tags from totozv order by created desc`
+        sql = `select name,nsfw,user_name,'{}'::text[] tags from totoz order by created desc`
         bind = []
     }
     else {

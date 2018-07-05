@@ -20,12 +20,15 @@ CREATE TABLE totoz (
     image bytea
 );
 CREATE UNIQUE INDEX name_uniqueci_idx on totoz(lower(name));
+CREATE INDEX trgrm_idx on totoz using gin (name gin_trgm_ops);
+CREATE INDEX created_idx on totoz (created);
 
 CREATE TABLE tags (
     name varchar(100) not null,
     totoz_name varchar(512) not null references totoz(name),
     primary key (name,totoz_name)
 );
+CREATE INDEX trgrm_idx on tags using gin (name gin_trgm_ops);
 
 CREATE VIEW totozv as
     select totoz.*,array_agg(tags.name) tags
