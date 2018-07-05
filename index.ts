@@ -11,6 +11,7 @@ import flash = require('connect-flash')
 import common_routes from './routes/common'
 import auth_routes from './routes/auth'
 import router from './routes/routes'
+const drupalHash = require('drupal-hash')
 import {User, get_user} from './model/user'
 
 // Misc. functions
@@ -54,8 +55,8 @@ app.use(passport.session());
 
 passport.use(new localStrategy.Strategy(async (username, password, done) => {
     const user = await get_user(username.toLowerCase())
-    // TODO: check password
-    if (user)
+
+    if (user && user.password && drupalHash.checkPassword(password,user.password))
         done(null, user)
     else
         done(null, false, {message:'abc'})
