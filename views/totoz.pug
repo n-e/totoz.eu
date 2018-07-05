@@ -6,10 +6,10 @@ block content
                 span(class='name') [:!{name}]
                 span(class='img')
                     if nsfw=='0' || !sfw
-                        img(src="/"+name.toLowerCase()+".gif")
+                        img(src="/"+name+".gif")
                     else
                         div(class='nsfw_img') NSFW
-                a(class='username',href='/user/' + username.toLowerCase())= username
+                a(class='username',href='/user/' + user_name)= user_name
                 if tags.length > 0
                     span(class='tags')
                         each tag in tags

@@ -63,8 +63,7 @@ routes.get('/', throwtonext(async (req, res, next) => {
     const info2 = info
         .map(i=> ({ 
             ...i, // TODO : clean this shit
-            lcName:i.name.toLowerCase(),
-            detailsUrl: '/totoz/' + i.name.toLowerCase(),
+            detailsUrl: '/totoz/' + i.name,
             hiName:highlightTermsSafe(i.name,query.split(' '),'match'),
             hiTags:(i.tags != undefined && query != '') ?
                 i.tags
@@ -85,7 +84,7 @@ routes.get('/', throwtonext(async (req, res, next) => {
 routes.get('/totoz/:totoz_id?', throwtonext(async (req, res, next) => {
     const totoz_id:string = req.params.totoz_id || ''
     const result = await pool.query(
-        `select name,tags from totozv where name = $1;`,
+        `select name,tags,nsfw,created,changed from totozv where name = $1;`,
         [totoz_id]
     )
 
@@ -105,7 +104,7 @@ routes.get('/user/:user_id?', throwtonext(async (req, res, next) => {
     const showall = req.query.showall === '1'
     const user_id:string = req.params.user_id || ''
     const result = await pool.query(
-        'select name from totoz where user_name = $1',
+        'select nsfw,name from totoz where user_name = $1',
         [user_id])
     // TODO: bail if user not found
 
@@ -116,8 +115,7 @@ routes.get('/user/:user_id?', throwtonext(async (req, res, next) => {
             ...t,
             hiTags: [],
             hiName: t.name,
-            lcName:t.name.toLowerCase(),
-            detailsUrl: '/totoz/' + t.name.toLowerCase(),
+            detailsUrl: '/totoz/' + t.name,
         }))
         .filter((t,i)=>i<120 || showall)
     const results_info = {
@@ -130,7 +128,7 @@ routes.get('/user/:user_id?', throwtonext(async (req, res, next) => {
     res.render('user', {user_id, results_info,totozes: tinfo2})
 }))
 
-routes.get('/:name.gif',throwtonext(async (req,res,next) => {
+routes.get('/:name(*).gif',throwtonext(async (req,res,next) => {
     const result = await pool.query(
         'select nsfw,image from totoz where name = $1',
         [req.params.name]

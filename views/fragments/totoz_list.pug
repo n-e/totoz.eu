@@ -9,7 +9,7 @@ div(class='totoz_list')
             span(class='name') [:!{t.hiName}]
             a(class='img',href=t.detailsUrl)
                 if t.nsfw=='0' || !sfw
-                    img(src="/"+t.lcName+".gif")
+                    img(src="/"+t.name+".gif")
                 else
                     div(class='nsfw_img') NSFW
             a(class='username',href='/user/' + t.user_name)= t.user_name
