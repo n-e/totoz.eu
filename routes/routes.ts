@@ -4,8 +4,8 @@ import express = require('express')
 import hescape = require('escape-html')
 
 import {incChar,highlightTerm, notEmpty, highlightTerms, highlightTermsSafe, lcase} from '../utils'
-import {totozes_startswith, totozes_info, totozes_ngram, TotozInfo, totoz_tags, totozes_byuser} from '../model/totoz'
 import { RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
+import { pool } from '../db';
 
 const throwtonext = (f: RequestHandler) => (req: express.Request,res: express.Response,next: express.NextFunction) => {
     Promise.resolve(f(req,res,next)).catch(next)
@@ -15,32 +15,31 @@ const routes = express.Router()
 
 
 // query: the query string as typed by the user
-// If the query has a length of 0: TODO
+// If the query has a length of 0: return newest totozes
 // If the query has keywords: return totozes that match all keywords exactly
-async function search(query: string) {
+async function search(query: string,limit:number|'ALL'): 
+    Promise<{name:string,user_name:string,tags:string[]}[]>
+{
     const keywords = query.split(' ')
+        .map(e => e.replace(/\W/gu,'').trim())
+        .filter(e => e != '')
 
-    // TODO : show a better default page
-    if (query.length == 0)
-        keywords.push('a') // return 1 and 2 letter totozes
+    let sql,bind:any[]
+    if (keywords.length == 0) {
+        sql = `select name,user_name,tags from totozv order by created desc`
+        bind = []
+    }
+    else {
+        sql = `select name,user_name,tags from totozv where name ~* all ($1)`
+        bind = [keywords]
+    }
+    sql += ' limit ' + limit
 
-    // Do the index search
-    const totozes = await totozes_ngram(keywords)
+    const totozes = await pool.query(sql,bind)
 
-    // Filter the false positives
-    let info:(TotozInfo & {tags?:string[]})[] = await totozes_info(totozes)
+    // TODO: search tags
 
-    for (let i of info)
-        i.tags = await totoz_tags(i.name.toLowerCase()) // TODO use BULK op
-
-    // if query length is zero don't refilter the default page
-    if (query.length == 0)
-        return info
-    else
-        return info.filter(i => keywords.every(
-            k=>lcase(i.name).indexOf(lcase(k))>=0 ||
-            i.tags!.some(t => lcase(t).indexOf(lcase(k))>=0)))
-
+    return totozes.rows
 }
 
 routes.get('/', throwtonext(async (req, res, next) => {
@@ -54,10 +53,11 @@ routes.get('/', throwtonext(async (req, res, next) => {
     const totozlist_only = req.query.tlonly === "1"
     const template = totozlist_only ? 'fragments/totoz_list' : 'index'
 
-    // QUERY PARAMETER 2: showall (optional)
+    // QUERY PARAMETER 3: showall (optional)
     const showall = req.query.showall === '1'
     
-    let info = await search(query)
+    let info = await search(query,showall ? 'ALL':120)
+    // TODO: add of XXX
 
     const info2 = info
         .map(i=> ({ 
@@ -71,14 +71,10 @@ routes.get('/', throwtonext(async (req, res, next) => {
                     .filter(t=>query.split(' ').some( kw => kw .length > 0 && t.indexOf(kw)>=0))
                 : []
         }))
-        .sort((a,b)=>a.lcName<b.lcName ? -1:1)
-        .filter((e,i)=> i<120 || showall)
-    
-    const truncated_results = query.split(' ').some(kw => kw.length < 3) // TODO move near the search function
+
     const results_info = {
         shown: info2.length,
-        count: info.length,
-        count_txt: truncated_results ? 'more than ' + info.length : '' + info.length,
+        count: 'count',
         showall_url: '/?q=' + hescape(query) + '&showall=1'
     }
 
@@ -87,16 +83,18 @@ routes.get('/', throwtonext(async (req, res, next) => {
 
 routes.get('/totoz/:totoz_id?', throwtonext(async (req, res, next) => {
     const totoz_id:string = req.params.totoz_id || ''
-    const [totoz_info] = await totozes_info([totoz_id])
+    const result = await pool.query(
+        `select name,tags from totozv where name = $1;`,
+        [totoz_id]
+    )
+
+    const totoz_info: {name:string,tags:string[]}|undefined = result.rows[0]
 
     if (!totoz_info || totoz_info.name === undefined)
         return next()
-    
-    const tags = await totoz_tags(totoz_id)
-    
+        
     res.render('totoz', {
         ...totoz_info,
-        tags,
         body_id:'totoz',
         page_title: '[:' + totoz_id + ']',
     })
@@ -105,10 +103,12 @@ routes.get('/totoz/:totoz_id?', throwtonext(async (req, res, next) => {
 routes.get('/user/:user_id?', throwtonext(async (req, res, next) => {
     const showall = req.query.showall === '1'
     const user_id:string = req.params.user_id || ''
-    const user_totozes = await totozes_byuser(user_id)
+    const result = await pool.query(
+        'select name from totoz where user_name = $1',
+        [user_id])
     // TODO: bail if user not found
 
-    const tinfo = await totozes_info(user_totozes)
+    const tinfo: {name:string}[] = result.rows
 
     const tinfo2 = tinfo
         .map(t => ({

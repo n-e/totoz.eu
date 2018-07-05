@@ -11,8 +11,8 @@ import flash = require('connect-flash')
 import common_routes from './routes/common'
 import auth_routes from './routes/auth'
 import router from './routes/routes'
+import { pool } from './db';
 const drupalHash = require('drupal-hash')
-import {User, get_user} from './model/user'
 
 // Misc. functions
 
@@ -54,19 +54,25 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(new localStrategy.Strategy(async (username, password, done) => {
-    const user = await get_user(username.toLowerCase())
-
-    if (user && user.password && drupalHash.checkPassword(password,user.password))
-        done(null, user)
+    const user = await pool.query(
+        'select * from users where lower(name) = lower($1)',[username])
+ 
+    if (
+        user.rowCount == 1 && 
+        drupalHash.checkPassword(password,user.rows[0].password)
+    )
+        done(null, user.rows[0])
     else
         done(null, false, {message:'abc'})
 }))
-passport.serializeUser(function(user: User, done) {
-    done(null, user.name.toLowerCase());
+passport.serializeUser(function(user: any, done) {
+    console.log('x '+user.name)
+    done(null, user.name);
 });
-passport.deserializeUser(async function(id:string, done) {
-    const user = await get_user(id)
-    done(null,user)
+passport.deserializeUser(async function(name:string, done) {
+    const user = await pool.query(
+        'select * from users where name = $1',[name])
+    done(null,user.rows[0])
 });
 
 app.use(flash())
