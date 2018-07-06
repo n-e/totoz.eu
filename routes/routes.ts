@@ -31,8 +31,15 @@ async function search(query: string,limit:number|'ALL'):
         bind = []
     }
     else {
-        sql = `select name,nsfw,user_name,tags from totozv where name ~* all ($1)`
-        bind = [keywords]
+        // We don't use totozv because using it results in the query being executed in the wrong order (and being slow)
+        sql = `with namesandtags as (
+                select name from totoz where name ilike $1 union select totoz_name from tags where name ilike $1
+            )
+            select totoz.name,nsfw,user_name,array_agg(tags.name) tags from namesandtags
+            left join tags on tags.totoz_name = namesandtags.name 
+            left join totoz on totoz.name = namesandtags.name
+            group by totoz.name`
+        bind = ['%'+ keywords[0] +'%']
     }
     sql += ' limit ' + limit
 

@@ -30,6 +30,7 @@ CREATE TABLE tags (
     primary key (name,totoz_name)
 );
 CREATE INDEX tags_name_trgrm_idx on tags using gin (name gin_trgm_ops);
+CREATE INDEX tags_totoz_name_idx on tags(totoz_name);
 
 CREATE VIEW totozv as
     select totoz.*,array_agg(tags.name) tags
