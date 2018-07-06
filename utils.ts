@@ -2,51 +2,38 @@ import hescape = require('escape-html')
 
 export const incChar = (s:string) => String.fromCharCode(s.charCodeAt(0)+1)
 
-// Returns a string with the term in a span with the provided class
-// None of the input variables are sanitized
-export const highlightTerm = (str: string, term:string, className: string) => {
-    if(term.length == 0)
-        return str
 
-    let pos = 0, next_pos = 0, out = ""
-    while(pos != -1) {
-        next_pos = lcase(str).indexOf(lcase(term),pos)
+// Highlights the terms by surrounding them with a span of class className
+// The returned string is correctly escaped (except for the inserted span of course)
+// so it can be included in html.
+export const highlightTerms = (str: string, terms:string[], className: string) => {
+    // console.log(str,terms,className)
+    terms = terms.filter(t => t.length > 0)
+    if(terms.length == 0)
+        return hescape(str)
 
-        if (next_pos == pos) {
-            out += `<span class="${className}">${str.substr(pos,term.length)}</span>`
+    let pos = 0, out = ""
+    while(pos < str.length) {
+        const next_terms = terms.map(term => ({idx:str.toLowerCase().indexOf(term.toLowerCase(),pos),term}))
+        
+        const term_here = next_terms.find(t => t.idx == pos)
+        // console.log(next_terms,term_here)
+        if (term_here) {
+            const term = term_here.term
+            out += `<span class="${hescape(className)}">${hescape(str.substr(pos,term.length))}</span>`
             pos += term.length
         }
         else {
-            out += (str.substr(pos,(next_pos == -1) ? undefined : (next_pos-pos)))
+            const next_pos = Math.min(...next_terms.filter(t => t.idx != -1).map(t => t.idx))
+            // console.log(next_pos)
+            out += hescape(str.substr(pos,(next_pos == +Infinity) ? undefined : (next_pos-pos)))
             pos = next_pos
         }
     }
-
     return out
 }
 
-export const highlightTerms = (str: string, terms:string[], className: string) => {
-    const unique_terms = Array.from(new Set(terms))
-    let out = str
-    let i = 0
-    for (let t of terms)
-        out = highlightTerm(out,t,className + ' ' + className + ++i)
-    return out
-}
-
-// highlight terms, escaping appropriately the input
-export const highlightTermsSafe = (str: string, terms:string[], className: string) => {
-    return highlightTerms(
-        hescape(str),
-        terms.map(t => hescape(t)),
-        hescape(className)
-    )
-}
 
 export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
 }
-
-// returns a lowercase copy of str
-// It's useful because String.prototype.toLowerCase mutates the string
-export const lcase = (str:string) => (''+str).toLowerCase()

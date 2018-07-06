@@ -3,7 +3,7 @@
 import express = require('express')
 import hescape = require('escape-html')
 
-import {incChar,highlightTerm, notEmpty, highlightTerms, highlightTermsSafe, lcase} from '../utils'
+import {incChar, notEmpty, highlightTerms} from '../utils'
 import { RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
 import { pool } from '../db';
 import { react } from 'babel-types';
@@ -71,11 +71,12 @@ routes.get('/', throwtonext(async (req, res, next) => {
         .map(i=> ({ 
             ...i, // TODO : clean this shit
             detailsUrl: '/totoz/' + i.name,
-            hiName:highlightTermsSafe(i.name,query.split(' '),'match'),
+            hiName:highlightTerms(i.name,query.split(' '),'match'),
             hiTags:(i.tags != undefined && query != '') ?
                 i.tags
-                    .map(t=>highlightTermsSafe(t,query.split(' '),'match'))
-                    .filter(t=>query.split(' ').some( kw => kw .length > 0 && t.indexOf(kw)>=0))
+                    .filter(t => t != null)
+                    .map(t=>highlightTerms(t,query.split(' '),'match'))
+                    .filter(t=>query.split(' ').some( kw => kw .length > 0 && t.toLowerCase().indexOf(kw.toLowerCase())>=0))
                 : []
         }))
 
