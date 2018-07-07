@@ -38,6 +38,15 @@ CREATE VIEW totozv as
     on tags.totoz_name = totoz.name
     group by totoz.name;
 
+-- from node_modules/connect-pg-simple/table.sql
+CREATE TABLE "session" (
+  "sid" varchar NOT NULL COLLATE "default",
+	"sess" json NOT NULL,
+	"expire" timestamp(6) NOT NULL
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
 COMMIT;
 
 GRANT select,insert,update,delete on all tables in schema public  to totoz;

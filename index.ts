@@ -11,6 +11,7 @@ import flash = require('connect-flash')
 import common_routes from './routes/common'
 import auth_routes from './routes/auth'
 import router from './routes/routes'
+import pgSession from 'connect-pg-simple'
 import { pool } from './db';
 const drupalHash = require('drupal-hash')
 
@@ -27,7 +28,9 @@ const port = +(process.env['PORT'] || 3000)
 const hostname = process.env['HOSTNAME'] || '127.0.0.1'
 const noimages = process.env['NOIMAGES'] ? true : false
 const session_secret = process.env['SECRET'] || 'abcd'
-console.warn('WARNING: the SECRET environment variable is not set')
+if (!process.env['SECRET'])
+    console.warn('WARNING: the SECRET environment variable is not set')
+const cookie_domain = process.env['COOKIEDOMAIN'] || undefined
 
 // Setup and run app
 const app = express()
@@ -48,6 +51,13 @@ if(app.get('env')=='development')
 app.use(session({
     secret: session_secret,
     saveUninitialized: false,
+    cookie: {
+        domain: cookie_domain,
+        maxAge:1000*3600*24*365*3,
+        sameSite: 'strict',
+    },
+    store: new (pgSession(session))({pool}),
+    resave:false,
 }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
@@ -66,13 +76,16 @@ passport.use(new localStrategy.Strategy(async (username, password, done) => {
         done(null, false, {message:'abc'})
 }))
 passport.serializeUser(function(user: any, done) {
-    console.log('x '+user.name)
     done(null, user.name);
 });
 passport.deserializeUser(async function(name:string, done) {
     const user = await pool.query(
         'select * from users where name = $1',[name])
-    done(null,user.rows[0])
+    
+    if (user.rowCount == 1)
+        done(null,user.rows[0])
+    else
+        done('User does not exist')
 });
 
 app.use(flash())
