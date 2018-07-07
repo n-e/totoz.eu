@@ -1,8 +1,9 @@
 extends layout.pug
 
 block content
-    h2= user_id
-    if user && user.name == user_id
+    h2= user.name
+    p A member since #{page_user.created}
+    if user && user.name == page_user.name
         a(href="/logout") Logout
         =' '
         a(href='/create_totoz') Create a totoz

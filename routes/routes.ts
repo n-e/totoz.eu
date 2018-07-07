@@ -50,6 +50,48 @@ async function search(query: string,limit:number|'ALL'):
     return totozes.rows
 }
 
+// returns the data that is used by the totoz_list fragment
+function data_for_totoz_list(query_result: any[],path:string,query?:string): {
+    totozes: {
+        name: string,
+        user_name: string,
+        tags: string[],
+        nsfw:boolean,
+        detailsUrl: string,
+        hiName: string,
+        hiTags: string
+    }[],
+    results_info: {
+        shown: number,
+        count:number,
+        showall_url:string
+    }
+}{
+    if (process.env.NODE_ENV != 'production' && query_result.length > 0) {
+        const r = query_result[0]
+        if (r.name == undefined || r.user_name == undefined || !r.tags.map ||r.nsfw === undefined)
+            throw new Error('It appears the query doesnt return the required fields ' +JSON.stringify(r))
+    }
+    const totozes = query_result
+        .map(i=> ({ 
+            ...i, // TODO : clean this shit
+            detailsUrl: '/totoz/' + i.name,
+            hiName:query ? highlightTerms(i.name,query.split(' '),'match') : i.name,
+            hiTags:(i.tags != undefined && query && query != '') ?
+                i.tags
+                    .filter((t:any) => t != null)
+                    .map((t:any)=>highlightTerms(t,query.split(' '),'match'))
+                    .filter((t:any)=>query.split(' ').some( kw => kw .length > 0 && t.toLowerCase().indexOf(kw.toLowerCase())>=0))
+                : []
+        }))
+    const results_info = {
+        shown: totozes.length,
+        count: 0,
+        showall_url:  path + (query ? '?q=' + hescape(query) + '&showall=1' : '')
+    }
+    return {totozes,results_info}
+}
+
 routes.get('/', throwtonext(async (req, res, next) => {
     // QUERY PARAMETER 1: query string (optional)
     const query:string = req.query.q || ''
@@ -65,28 +107,8 @@ routes.get('/', throwtonext(async (req, res, next) => {
     const showall = req.query.showall === '1'
     
     let info = await search(query,showall ? 'ALL':120)
-    // TODO: add of XXX
 
-    const info2 = info
-        .map(i=> ({ 
-            ...i, // TODO : clean this shit
-            detailsUrl: '/totoz/' + i.name,
-            hiName:highlightTerms(i.name,query.split(' '),'match'),
-            hiTags:(i.tags != undefined && query != '') ?
-                i.tags
-                    .filter(t => t != null)
-                    .map(t=>highlightTerms(t,query.split(' '),'match'))
-                    .filter(t=>query.split(' ').some( kw => kw .length > 0 && t.toLowerCase().indexOf(kw.toLowerCase())>=0))
-                : []
-        }))
-
-    const results_info = {
-        shown: info2.length,
-        count: 'count',
-        showall_url: '/?q=' + hescape(query) + '&showall=1'
-    }
-
-    res.render(template, {totozes: info2, query, results_info, body_id:'index'})
+    res.render(template, {query, ...data_for_totoz_list(info,'/',query), body_id:'index'})
 }))
 
 routes.get('/totoz/:totoz_id?', throwtonext(async (req, res, next) => {
@@ -111,29 +133,19 @@ routes.get('/totoz/:totoz_id?', throwtonext(async (req, res, next) => {
 routes.get('/user/:user_id?', throwtonext(async (req, res, next) => {
     const showall = req.query.showall === '1'
     const user_id:string = req.params.user_id || ''
-    const result = await pool.query(
-        'select nsfw,name from totoz where user_name = $1',
+
+    const result = await pool.query('select name,created from users where name = $1', [user_id])
+
+    if (result.rowCount == 0) {next(); return;}
+
+    const page_user = result.rows[0]
+
+    const result2 = await pool.query(
+        'select nsfw,name,user_name,tags from totozv where user_name = $1',
         [user_id])
     // TODO: bail if user not found
 
-    const tinfo: {name:string}[] = result.rows
-
-    const tinfo2 = tinfo
-        .map(t => ({
-            ...t,
-            hiTags: [],
-            hiName: t.name,
-            detailsUrl: '/totoz/' + t.name,
-        }))
-        .filter((t,i)=>i<120 || showall)
-    const results_info = {
-        shown: tinfo2.length,
-        count: tinfo.length,
-        count_txt: 0 ? 'more than ' + tinfo.length : '' + tinfo.length,
-        showall_url: '/user/' + user_id + '?showall=1'
-    }
-
-    res.render('user', {user_id, results_info,totozes: tinfo2})
+    res.render('user', {page_user, ...data_for_totoz_list(result2.rows,'/user/'+user_id)})
 }))
 
 routes.get('/:name(*).gif',throwtonext(async (req,res,next) => {
