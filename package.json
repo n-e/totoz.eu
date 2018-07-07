@@ -44,7 +44,7 @@
     "@types/passport-local": "^1.0.33",
     "@types/pg": "^7.4.10",
     "concurrently": "^3.5.1",
-    "nodemon": "^1.17.1",
+    "nodemon": "^1.17.5",
     "test": "^0.6.0",
     "tslint": "^5.9.1",
     "typescript": "^2.7.2"
