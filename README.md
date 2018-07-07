@@ -54,4 +54,4 @@
 
 ### Misc. Commands
 
-- ``rsync -az . beta.totoz.eu:/home/totoz/app && ssh beta.totoz.eu 'sudo systemctl restart totoz'``
+- ``ssh beta.totoz.eu 'git pull && npm i && npm run build && sudo systemctl restart totoz'``
