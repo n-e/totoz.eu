@@ -36,7 +36,7 @@ async function search(query: string,limit:number|'ALL'):
         sql = `with namesandtags as (
                 select name from totoz where name ilike $1 union select totoz_name from tags where name ilike $1
             )
-            select totoz.name,nsfw,user_name,array_agg(tags.name) tags from namesandtags
+            select totoz.name,nsfw,totoz.user_name,array_agg(tags.name) tags from namesandtags
             left join tags on tags.totoz_name = namesandtags.name 
             left join totoz on totoz.name = namesandtags.name
             group by totoz.name`
@@ -114,18 +114,26 @@ routes.get('/', throwtonext(async (req, res, next) => {
 
 routes.get('/totoz/:totoz_id?', throwtonext(async (req, res, next) => {
     const totoz_id:string = req.params.totoz_id || ''
-    const result = await pool.query(
-        `select name,tags,nsfw,created,changed from totozv where name = $1;`,
-        [totoz_id]
+    const {rows} = await pool.query(`
+        select
+            t.name totoz_name,
+            ta.name tag_name,
+            t.user_name as totoz_user_name,
+            (ta.user_name = $2 or t.user_name = $2) as can_delete,
+            nsfw,
+            created,
+            changed
+        from totoz t
+        left join tags ta on ta.totoz_name = t.name
+        where t.name = $1;`,
+        [totoz_id,req.user ? req.user.name:null]
     )
 
-    const totoz_info: {name:string,tags:string[]}|undefined = result.rows[0]
-
-    if (!totoz_info || totoz_info.name === undefined)
+    if (rows.length == 0)
         return next()
         
     res.render('totoz', {
-        ...totoz_info,
+        data:rows,
         body_id:'totoz',
         page_title: '[:' + totoz_id + ']',
     })
@@ -228,18 +236,22 @@ routes.post('/create_totoz',multipart.single('image'),throwtonext(async (req, re
 
 }))
 
+// returns the totoz name if it exists, null otherwise
+async function validate_totoz_name(name:string) {
+    const results = await pool.query(
+        'select name from totoz where name = $1',
+        [name])
+    return results.rowCount ? ''+results.rows[0].name : null
+}
 
 routes.post('/add_tags',throwtonext(async (req, res, next) => {
     const tags = (''+req.body.tags).split(/[ ,]/)
         .map(t => t.replace(/[^A-Za-z0-9-_]/g,''))
         .filter(t => t.length > 0)
 
-    const results = await pool.query(
-        'select name from totoz where name = $1',
-        [req.body.totoz_name])
-    const totoz_name = results.rowCount ? results.rows[0].name : null
-
+    const totoz_name = await validate_totoz_name(req.body.totoz_name)
     if (totoz_name && req.user) {
+
         await pool.query(`
             insert into tags(name,totoz_name,user_name)
             select unnest as name,$1,$2 as totoz_name
@@ -250,6 +262,21 @@ routes.post('/add_tags',throwtonext(async (req, res, next) => {
     }
 }))
 
+routes.post('/delete_tag',throwtonext(async (req, res, next) => {
+    const {tag_name,totoz_name} = req.body
+    if (req.user && await validate_totoz_name(totoz_name)) {
+        await pool.query(`
+            delete from tags
+            where name = $1 and totoz_name = $2 and (
+                user_name = $3
+                or exists (select * from totoz where name = $2 and user_name = $3)
+            )`,
+            [tag_name,totoz_name,req.user.name])
+        res.redirect('/totoz/' + totoz_name)
+    }
+    else
+        next()
+}))
 
 routes.get('/:name(*).gif',throwtonext(async (req,res,next) => {
     const result = await pool.query(

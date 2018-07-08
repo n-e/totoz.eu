@@ -1,34 +1,40 @@
 extends layout.pug
 
 block content
+    - t = data[0]
     div(class='unique_totoz')
         div(class='totoz')
-                span(class='name') [:!{name}]
+                span(class='name') [:!{t.totoz_name}]
                 span(class='img')
-                    if nsfw=='0' || !sfw
-                        img(src="/"+name+".gif")
+                    if t.nsfw=='0' || !sfw
+                        img(src="/"+t.totoz_name+".gif")
                     else
                         div(class='nsfw_img') NSFW
-                a(class='username',href='/user/' + user_name)= user_name
-                if tags.length > 0
+                a(class='username',href='/user/' + t.totoz_user_name)= t.totoz_user_name
+                if data[0].tag_name
                     span(class='tags')
-                        each tag in tags
-                            a(href='/?q='+tag) #{tag}
+                        each tag in data
+                            a(href='/?q='+tag.tag_name) #{tag.tag_name}
+                            if tag.can_delete
+                                form(action="/delete_tag", method="post",class='delete_tag')
+                                    input(type="hidden", name="tag_name",value=tag.tag_name)
+                                    input(type="hidden", name="totoz_name",value=tag.totoz_name)
+                                    input(type="submit", value="X")
                             = ' '
                 span
                     strong Créé le : 
-                    = created
+                    = t.created
                 span
                     strong Modifié le : 
-                    = changed
+                    = t.changed
                 span
-                    if nsfw=='0'
+                    if t.nsfw=='0'
                         | SFW
                     else
                         | NSFW
                 if user
                     form(action="/add_tags", method="post")
                         input(type="text",name='tags',placeholder='tag1 tag2')
-                        input(type="hidden", name="totoz_name",value=name)
+                        input(type="hidden", name="totoz_name",value=t.totoz_name)
                         =' '
                         input(type="submit", value="Add")

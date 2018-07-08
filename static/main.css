@@ -195,3 +195,14 @@ form .error {
     background-color: #f2dede;
     border-color: #ebccd1;
 }
+
+
+form.delete_tag {
+    display: inline;
+}
+form.delete_tag input[type='submit'] {
+    border:none;
+    background:transparent;
+    padding:0;
+    cursor: pointer;
+}
