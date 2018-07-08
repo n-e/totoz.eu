@@ -2,6 +2,8 @@
 
 import express = require('express')
 import hescape = require('escape-html')
+import multer from 'multer'
+import sizeOf from 'image-size'
 
 import {incChar, notEmpty, highlightTerms} from '../utils'
 import { RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
@@ -13,7 +15,6 @@ const throwtonext = (f: RequestHandler) => (req: express.Request,res: express.Re
 }
 
 const routes = express.Router()
-
 
 // query: the query string as typed by the user
 // If the query has a length of 0: return newest totozes
@@ -147,6 +148,86 @@ routes.get('/user/:user_id?', throwtonext(async (req, res, next) => {
 
     res.render('user', {page_user, ...data_for_totoz_list(result2.rows,'/user/'+user_id)})
 }))
+
+
+routes.get('/create_totoz',throwtonext(async (req, res, next) => {
+    res.render('create_edit_totoz',{prevValues:{nsfw:'false'},errors:[]})
+}))
+
+
+const multipart = multer()
+
+routes.post('/create_totoz',multipart.single('image'),throwtonext(async (req, res, next) => {
+    if (!req.user) {
+        next(); return
+    }
+
+    let errors: string[] = []
+
+    const nsfw = req.body.nsfw == 'true' ? true : false
+    const tags = (''+req.body.tags).split(/[ ,]/).filter(t => t.length > 0)
+    for (const t of tags)
+        if(!t.match(/^[A-Za-z0-9-_]+$/))
+            errors.push(`Tag '${t}' is invalid`)
+    console.log(req.body.nsfw,nsfw)
+    const name = ''+req.body.name
+    if(!name.match(/^[A-Za-z0-9-_ ]+$/))
+        errors.push(`Totoz name '${name}' is invalid`)
+
+    const image = req.file ? req.file.buffer : undefined
+    if(image == undefined)
+        errors.push('You need to provide an image for the totoz')
+    
+    if(image) {
+        if (image.length > 1024*500)
+            errors.push(`Image is too big (${Math.round(image.length/1024)}kB)`)
+
+        try {
+        const data = sizeOf(image)
+        if (data.type != 'gif' && data.type != 'jpg' && data.type != 'png')
+            errors.push(`Wrong image format (${data.type}), gif, jpeg and png are allowed.`)
+        if (data.height > 200 || data.width > 200)
+            errors.push(`Image is too big (${data.width},${data.height})`)
+        }
+        catch (e) {
+            errors.push(`Unknown image format`)
+        }
+    }
+    
+    if (errors.length == 0) {
+        const client = await pool.connect()
+        try {
+            await client.query('begin')
+            await client.query(`
+                insert into totoz(name,created,changed,nsfw,user_name,image)
+                values($1,now(),now(),$2,$3,$4)`,
+                [name,nsfw,req.user.name,image]
+            )
+            await client.query(`
+                insert into tags(name,totoz_name)
+                select unnest as name,$1 as totoz_name
+                from  unnest($2::varchar[]);`,
+                [name,tags])
+            await client.query('commit')
+            res.redirect('/totoz/'+name)
+            return
+
+        } catch (e) {
+            await client.query('rollback')
+            if(e.constraint == 'totoz_name_uniqueci_idx' || e.constraint == 'totoz_pkey')
+                errors.push(`Totoz '${name}' already exists`)
+            else
+                throw e
+        } finally {
+            client.release()
+        }
+    }
+    
+    if (errors.length > 0)
+        res.render('create_edit_totoz',{errors,prevValues:req.body})
+
+}))
+
 
 routes.get('/:name(*).gif',throwtonext(async (req,res,next) => {
     const result = await pool.query(

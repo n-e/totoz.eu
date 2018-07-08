@@ -1,0 +1,34 @@
+extend layout
+
+block content
+    h2 Create a new Totoz
+    form(method='post',enctype="multipart/form-data")
+        table
+            tr
+                th: label(for="name") Name:
+                td: input(type="text",name='name',id='name',value=prevValues.name)
+                td Only unaccented letters, numbers, dashes (-), underscores (_) and spaces are allowed.
+            tr
+                th: label(for="image") Image:
+                td: input(type="file", name="image".id='image')
+                td
+                    p Files must be less than 500 KB.
+                    p Allowed file types: png gif jpg jpeg.
+                    p Image dimensions must be at most 200x200
+            tr
+                th: span NSFW:
+                td
+                    input(type="radio", name="nsfw",checked=prevValues.nsfw=='true',value='true',id='nsfw_true')
+                    label(for="nsfw_true") Yes
+                    input(type="radio", name="nsfw",checked=prevValues.nsfw=='false',value='false',id='nsfw_false')
+                    label(for="nsfw_false") No
+            tr
+                th: label(for="tags") Tags:
+                td: input(type="text",name='tags',id='tags',value=prevValues.tags)
+                td Only unaccented letters, numbers, dashes (-), underscores (_) are allowed in a tag. Tags are separated with spaces or commas.
+            tr
+                td(colspan='3')
+                    for e in errors
+                        p(class='error')= e
+            tr
+                td(colspan='3',class='submit'): input(type="submit", value="Create it!")

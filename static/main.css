@@ -123,9 +123,11 @@ body#totoz #cnt {
     justify-content: space-between;
     margin: 2px;
     padding:2px 0 3px;
-    background: #fff;
     overflow: hidden;
+}
+.totoz,form table {
     box-shadow:0 2px 2px 0 rgba(0, 0, 0, 0.1);
+    background: #fff;
 }
 
 .match {background:#ffff00}
@@ -168,4 +170,28 @@ body#totoz #cnt {
     color: #777;
     text-align: center;
     margin:50px 0 12px;
+}
+
+/* Forms */
+form table {
+    margin: auto;
+    padding: 1em 1em 1.5em;
+}
+form th,form td {
+    text-align: left;
+    padding:5px 8px;
+}
+form td.submit {
+    text-align: center;
+}
+
+form .error {
+    padding:  7px 15px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
 }

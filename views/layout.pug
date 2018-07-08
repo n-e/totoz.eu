@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 html(lang="en")
     head
         meta(charset="UTF-8")
@@ -16,10 +17,6 @@ html(lang="en")
             h1
                 a(href='/') Totoz.eu Beta
             span(class='spc')
-            if user
-                a(href="/user/"+user.name.toLowerCase())= user.name
-            else
-                a(href='/login') Log in
             if sfw
                 a(href=nsfw_url,class='sfw_status sfw')
                     span(class='nohover') SFW
@@ -28,6 +25,11 @@ html(lang="en")
                 a(href=sfw_url,class='sfw_status nsfw')
                     span(class='nohover') NSFW
                     span(class='hover') Go to SFW
+            if user
+                a(href='/create_totoz') Create a Totoz
+                a(href="/user/"+user.name.toLowerCase())= user.name
+            else
+                a(href='/login') Log in
 
         div(id='cnt')
             block content
