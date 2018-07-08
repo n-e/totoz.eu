@@ -31,6 +31,10 @@ CREATE TABLE tags (
 );
 CREATE INDEX tags_name_trgrm_idx on tags using gin (name gin_trgm_ops);
 CREATE INDEX tags_totoz_name_idx on tags(totoz_name);
+-- if null: the owner of the tag is the totoz owner. only him
+-- can delete it.
+-- if not null : tag user and the totoz user can delete it.
+alter table tags add column user_name varchar(100) references users(name);
 
 CREATE VIEW totozv as
     select totoz.*,array_agg(tags.name) tags

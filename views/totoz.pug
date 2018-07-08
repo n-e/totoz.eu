@@ -26,3 +26,9 @@ block content
                         | SFW
                     else
                         | NSFW
+                if user
+                    form(action="/add_tags", method="post")
+                        input(type="text",name='tags',placeholder='tag1 tag2')
+                        input(type="hidden", name="totoz_name",value=name)
+                        =' '
+                        input(type="submit", value="Add")

@@ -229,6 +229,28 @@ routes.post('/create_totoz',multipart.single('image'),throwtonext(async (req, re
 }))
 
 
+routes.post('/add_tags',throwtonext(async (req, res, next) => {
+    const tags = (''+req.body.tags).split(/[ ,]/)
+        .map(t => t.replace(/[^A-Za-z0-9-_]/g,''))
+        .filter(t => t.length > 0)
+
+    const results = await pool.query(
+        'select name from totoz where name = $1',
+        [req.body.totoz_name])
+    const totoz_name = results.rowCount ? results.rows[0].name : null
+
+    if (totoz_name && req.user) {
+        await pool.query(`
+            insert into tags(name,totoz_name,user_name)
+            select unnest as name,$1,$2 as totoz_name
+            from  unnest($3::varchar[])
+            on conflict do nothing`,
+            [totoz_name,req.user.name,tags])
+        res.redirect('/totoz/'+totoz_name)
+    }
+}))
+
+
 routes.get('/:name(*).gif',throwtonext(async (req,res,next) => {
     const result = await pool.query(
         'select nsfw,image from totoz where name = $1',
