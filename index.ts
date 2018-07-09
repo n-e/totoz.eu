@@ -94,4 +94,9 @@ app.use('/', common_routes)
 app.use('/', auth_routes(passport))
 app.use('/', router)
 
+app.use((err:any,req:express.Request,res:express.Response,next:express.NextFunction) => {
+    console.log('ERROR:',req.url,req.body,req.session,err)
+    res.sendStatus(500)
+})
+
 app.listen(port,hostname)
