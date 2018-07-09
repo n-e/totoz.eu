@@ -303,8 +303,10 @@ routes.get('/img/:name(*)',throwtonext(async (req,res,next) => {
     )
     if (rows.length == 0)
         next()
-    else if (rows[0].nsfw && res.locals.sfw)
-        res.status(404).send('This totoz is NSFW and you are on the SFW site')
+    else if (rows[0].nsfw && res.locals.sfw) {
+        res.statusMessage = 'Not Safe For Work'
+        res.status(403).send('This totoz is NSFW and you are on the SFW site')
+    }
     else if (rows[0].image == null)
         res.status(404).send('This totoz has no image')
     else if (rows[0].name != req.params.name)
