@@ -4,6 +4,7 @@ import express = require('express')
 import hescape = require('escape-html')
 import multer from 'multer'
 import sizeOf from 'image-size'
+import { js2xml } from 'xml-js'
 
 import {incChar, notEmpty, highlightTerms} from '../utils'
 import { RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
@@ -20,7 +21,7 @@ const routes = express.Router()
 // If the query has a length of 0: return newest totozes
 // If the query has keywords: return totozes that match all keywords exactly
 async function search(query: string,limit:number|'ALL'): 
-    Promise<{name:string,user_name:string,tags:string[]}[]>
+    Promise<{name:string,nsfw:boolean,user_name:string,tags:string[]}[]>
 {
     const keywords = query.split(' ')
         .map(e => e.replace(/\W/gu,'').trim())
@@ -95,7 +96,7 @@ function data_for_totoz_list(query_result: any[],path:string,query?:string): {
 
 routes.get('/', throwtonext(async (req, res, next) => {
     // QUERY PARAMETER 1: query string (optional)
-    const query:string = req.query.q || ''
+    const query = '' + (req.query.q || '')
 
     // QUERY PARAMETER 2: tlonly (optional)
     // if set to 1, only send the html fragment that contains the totoz list.
@@ -110,6 +111,22 @@ routes.get('/', throwtonext(async (req, res, next) => {
     let info = await search(query,showall ? 'ALL':120)
 
     res.render(template, {query, ...data_for_totoz_list(info,'/',query), body_id:'index'})
+}))
+
+routes.get('/search.xml',throwtonext(async (req,res,next) => {
+    const query = ''+ (req.query.terms || '')
+    const offset = + (req.query.offset || 0) // not used for now
+    const totoz = await search(query,120)
+
+    const totozForXml = totoz.map(t =>({
+        name:t.name,
+        username:t.user_name,
+        tag:t.tags,
+        nsfw: t.nsfw ? 1 : 0
+    }))
+
+    const xml = js2xml({totozes:{totoz:totozForXml}},{compact:true,spaces:2})
+    res.type('xml').send(xml)
 }))
 
 routes.get('/totoz/:totoz_id?', throwtonext(async (req, res, next) => {
