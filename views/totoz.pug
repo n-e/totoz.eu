@@ -7,7 +7,7 @@ block content
                 span(class='name') [:!{t.totoz_name}]
                 span(class='img')
                     if t.nsfw=='0' || !sfw
-                        img(src="/"+t.totoz_name+".gif")
+                        img(src="/img/"+t.totoz_name)
                     else
                         div(class='nsfw_img') NSFW
                 a(class='username',href='/user/' + t.totoz_user_name)= t.totoz_user_name

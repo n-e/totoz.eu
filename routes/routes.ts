@@ -279,19 +279,28 @@ routes.post('/delete_tag',throwtonext(async (req, res, next) => {
         next()
 }))
 
-routes.get('/:name(*).gif',throwtonext(async (req,res,next) => {
-    const result = await pool.query(
-        'select nsfw,image from totoz where name = $1',
+routes.get('/img/:name(*)',throwtonext(async (req,res,next) => {
+    const {rows} = await pool.query(
+        'select name,nsfw,image from totoz where lower(name) = lower($1)',
         [req.params.name]
     )
-    if (result.rowCount == 0)
+    if (rows.length == 0)
         next()
-    else if (result.rows[0].nsfw && res.locals.sfw)
+    else if (rows[0].nsfw && res.locals.sfw)
         res.status(404).send('This totoz is NSFW and you are on the SFW site')
-    else if (result.rows[0].image == null)
+    else if (rows[0].image == null)
         res.status(404).send('This totoz has no image')
-    else
-        res.type('gif').send(result.rows[0].image)
+    else if (rows[0].name != req.params.name)
+        res.redirect(301,'/img/' + rows[0].name)
+    else {
+        let image_type = 'gif'
+        try {
+            const {type} = sizeOf(rows[0].image)
+            if (type) image_type = type;
+        }
+        catch(e) {}
+        res.type(image_type).send(rows[0].image)
+    }
 }))
 
 export default routes
