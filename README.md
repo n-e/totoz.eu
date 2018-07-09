@@ -54,4 +54,4 @@
 
 ### Misc. Commands
 
-- ``ssh beta.totoz.eu 'git pull && npm i && npm run build && sudo systemctl restart totoz'``
+- ``ssh beta.totoz.eu 'cd ~totoz/app && git pull && npm i --no-save && npm run build && sudo systemctl restart totoz'``

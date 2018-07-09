@@ -27,7 +27,7 @@ html(lang="en")
                     span(class='hover') Go to SFW
             if user
                 a(href='/create_totoz') Create a Totoz
-                a(href="/user/"+user.name.toLowerCase())= user.name
+                a(href="/user/"+user.name)= user.name
             else
                 a(href='/login') Log in
 

@@ -1,7 +1,7 @@
 extends layout.pug
 
 block content
-    h2= user.name
+    h2= page_user.name
     p A member since #{page_user.created}
     if user && user.name == page_user.name
         a(href="/logout") Logout
