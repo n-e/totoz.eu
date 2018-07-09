@@ -88,7 +88,7 @@ function data_for_totoz_list(query_result: any[],path:string,query?:string): {
     const results_info = {
         shown: totozes.length,
         count: 0,
-        showall_url:  path + (query ? '?q=' + hescape(query) + '&showall=1' : '')
+        showall_url:  path + (query ? '?q=' + hescape(query) + '&showall=1' : '?showall=1')
     }
     return {totozes,results_info}
 }
@@ -149,8 +149,9 @@ routes.get('/user/:user_id?', throwtonext(async (req, res, next) => {
 
     const page_user = result.rows[0]
 
+    const limit = showall ? 'ALL' : 120
     const result2 = await pool.query(
-        'select nsfw,name,user_name,tags from totozv where user_name = $1',
+        'select nsfw,name,user_name,tags from totozv where user_name = $1 limit '+limit,
         [user_id])
     // TODO: bail if user not found
 
