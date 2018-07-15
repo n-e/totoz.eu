@@ -4,6 +4,10 @@ body, input {
     color: #444;
 }
 
+.large-font {
+    font-size: 13px;
+}
+
 /* Misc paragraph styles */
 a {
     color: #0af;
@@ -185,15 +189,23 @@ form td.submit {
     text-align: center;
 }
 
-form .error {
+form .error, .info {
     padding:  7px 15px;
     margin-bottom: 10px;
     border: 1px solid transparent;
     border-radius: 4px;
+}
 
+form .error {
     color: #a94442;
     background-color: #f2dede;
     border-color: #ebccd1;
+}
+
+.info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
 }
 
 
