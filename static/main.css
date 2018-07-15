@@ -189,6 +189,8 @@ form td.submit {
     text-align: center;
 }
 
+form table h2 { margin: 0;}
+
 form .error, .info {
     padding:  7px 15px;
     margin-bottom: 10px;

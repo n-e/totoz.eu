@@ -73,7 +73,7 @@ passport.use(new localStrategy.Strategy(async (username, password, done) => {
     )
         done(null, user.rows[0])
     else
-        done(null, false, {message:'abc'})
+        done(null, false, {message:'Wrong username or password'})
 }))
 passport.serializeUser(function(user: any, done) {
     done(null, user.name);
