@@ -29,6 +29,7 @@ html(lang="en")
                 a(href='/create_totoz') Create a Totoz
                 a(href="/user/"+user.name)= user.name
             else
+                a(href='/new_account') Create an Account
                 a(href='/login') Log in
 
         div(id='cnt')
@@ -39,7 +40,7 @@ html(lang="en")
                 a(href="https://miaoli.im/tribune/totoz.eu") tribune
                 |  or file an&nbsp;
                 a(href="https://github.com/n-e/totoz.eu/issues") issue
-                |  on github. We hope you enjoy it!
+                |  on GitHub.
             block content
 
         div(class='about')

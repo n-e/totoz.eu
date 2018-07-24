@@ -1,0 +1,30 @@
+extends layout.pug
+
+block content
+    form(action="/new_account", method="post")
+        table
+            tr
+                td Name:
+                td: input(type="text", name='username',pattern='[A-Za-z0-9-_]+')
+                td Only unaccented letters, numbers, dashes (-) and underscores (_) are allowed.
+            
+            tr
+                td Email:
+                td: input(type="email", name='email')
+                td The email is required and is used in case you lose your password.
+            tr
+                td Password:
+                td: input(type="password", name="password",autocomplete="new-password",minlength=4)
+            tr
+                td Retype password:
+                td: input(type="password", name="password",autocomplete="new-password",minlength=4)
+
+            if errors.length
+                tr: td(colspan=3)
+                    for e in errors
+                        div(class='error')= e
+            tr: td(class='submit',colspan=3)
+                input(type="submit", value="Create Account")
+                br
+                br
+                a(href='https://miaoli.im/tribune/totoz.eu') Help

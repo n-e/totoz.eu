@@ -6,14 +6,11 @@ import multer from 'multer'
 import sizeOf from 'image-size'
 import { js2xml } from 'xml-js'
 
-import {incChar, notEmpty, highlightTerms} from '../utils'
+import {incChar, notEmpty, highlightTerms, throwtonext} from '../utils'
 import { RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
 import { pool } from '../db';
 import { react } from 'babel-types';
 
-const throwtonext = (f: RequestHandler) => (req: express.Request,res: express.Response,next: express.NextFunction) => {
-    Promise.resolve(f(req,res,next)).catch(next)
-}
 
 const routes = express.Router()
 

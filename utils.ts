@@ -1,4 +1,5 @@
 import hescape = require('escape-html')
+import { Request, Response, RequestHandler, NextFunction } from 'express';
 
 export const incChar = (s:string) => String.fromCharCode(s.charCodeAt(0)+1)
 
@@ -36,4 +37,8 @@ export const highlightTerms = (str: string, terms:string[], className: string) =
 
 export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
+}
+
+export const throwtonext = (f: RequestHandler) => (req: Request,res: Response,next: NextFunction) => {
+    Promise.resolve(f(req,res,next)).catch(next)
 }
