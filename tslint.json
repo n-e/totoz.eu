@@ -1,0 +1,27 @@
+{
+    "defaultSeverity": "warning",
+    "extends": [
+        "tslint:latest",
+        "tslint-eslint-rules-recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "quotemark": [true, "single", "avoid-escape"],
+        "semicolon": [true, "never"],
+        "ordered-imports": false,
+        "no-consecutive-blank-lines": [true, 3],
+        "max-line-length": [true, 85],
+        "curly": [true, "as-needed"],
+        "variable-name": [true, "ban-keywords", "check-format", "allow-snake-case"],
+        "one-variable-per-declaration": false,
+        "arrow-parens": [true, "ban-single-arg-parens"],
+        "trailing-comma": false,
+        "one-line": [true, "check-whitespace"],
+        "triple-equals": false,
+        "object-literal-sort-keys": false,
+        "no-implicit-dependencies": { "severity": "error"},
+        "array-type": false,
+        "no-empty": [true, "allow-empty-catch"]
+    },
+    "rulesDirectory": []
+}

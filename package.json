@@ -6,8 +6,7 @@
   "scripts": {
     "test": "node build/utils.test.js",
     "build": "tsc",
-    "watch": "concurrently --kill-others 'tsc -w' 'nodemon index.js'",
-    "reindex": "node build/scripts/reindex"
+    "watch": "concurrently --kill-others 'tsc -w' 'nodemon build/index.js'"
   },
   "repository": {
     "type": "git",
@@ -53,6 +52,8 @@
     "nodemon": "1.18.3",
     "test": "0.6.0",
     "tslint": "5.11.0",
+    "tslint-eslint-rules": "^5.3.1",
+    "tslint-eslint-rules-recommended": "^1.1.0",
     "typescript": "2.9.2"
   }
 }
