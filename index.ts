@@ -90,6 +90,18 @@ passport.deserializeUser(async function(name:string, done) {
 
 app.use(flash())
 
+// Workarounds for coincoins that use "bad" urls
+app.use((req,res,next) => {
+    // linuxfr.org requests '/img/$i.gif' instead of '/img/$i'
+    if (req.url.match(/^\/img\/[A-Za-z0-9-_ :]+\.gif$/))
+        res.redirect(req.url.substr(0,req.url.length-4))
+    // Olcc requests //img/$i
+    else if (req.url.match(/^\/\/img\/[A-Za-z0-9-_ :]+$/))
+        res.redirect(req.url.substr(1))
+    else
+        next()
+})
+
 app.use('/', common_routes)
 app.use('/', auth_routes(passport))
 app.use('/', router)
