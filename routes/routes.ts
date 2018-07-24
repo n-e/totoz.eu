@@ -315,6 +315,7 @@ routes.get('/img/:name(*)',throwtonext(async (req,res,next) => {
             if (type) image_type = type;
         }
         catch(e) {}
+        res.setHeader('Cache-Control',['public','max-age='+3600*24*7])
         res.type(image_type).send(rows[0].image)
     }
 }))
