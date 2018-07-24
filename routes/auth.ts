@@ -17,7 +17,13 @@ function get_router(passport: PassportStatic) {
 
     router.get('/logout', function(req, res){
         req.logout();
-        res.redirect('/');
+        // req.logout is not instant because of the postgres session
+        // store but it doesn't provide a callback so we
+        // save the session again to work around that
+        if (req.session)
+            req.session.save(cb => res.redirect('/'))
+        else
+            res.redirect('/')
       });
       
       return router
