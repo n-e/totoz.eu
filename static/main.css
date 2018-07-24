@@ -90,6 +90,8 @@ body#totoz #cnt {
     margin:24px 0;
 }
 
+#cnt > .info {text-align: center;}
+
 #search {
     margin:24px 0;
     text-align: center;
