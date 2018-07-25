@@ -25,10 +25,10 @@ export const highlightTerms = (str: string, terms: string[], className: string) 
         // console.log(next_terms,term_here)
         if (term_here) {
             const term = term_here.term
-            out += `
-                <span class="${hescape(className)}">
-                    ${hescape(str.substr(pos, term.length))}
-                </span>`
+            out +=
+                `<span class="${hescape(className)}">` +
+                `${hescape(str.substr(pos, term.length))}` +
+                `</span>`
             pos += term.length
         }
         else {
