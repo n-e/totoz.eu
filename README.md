@@ -31,6 +31,10 @@
 5) Do the same for the users:
     - ``insert into users(name,password,email,created,accessed) select name,pass,mail,to_timestamp(created),to_timestamp(access) from users_import;``
 
+## Update the hfr totozes:
+
+    node build/hfr-importer.js
+
 ## Official server
 
 [https://beta.totoz.eu](https://beta.totoz.eu)
