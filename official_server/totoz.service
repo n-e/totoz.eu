@@ -8,7 +8,8 @@ User=totoz
 Group=totoz
 Environment=NODE_ENV=production
 Environment=PGHOST=/var/run/postgresql
-Environment=COOKIEDOMAIN=beta.totoz.eu
+Environment=COOKIEDOMAIN=totoz.eu
+Environment=SECRET=
 
 [Install]
 WantedBy=multi-user.target
