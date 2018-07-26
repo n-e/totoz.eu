@@ -12,7 +12,7 @@ div(class='totoz_list')
                     img(src="/img/"+t.name)
                 else
                     div(class='nsfw_img') NSFW
-            a(class='username',href='/user/' + t.user_name)= t.user_name
+            a(class='username',href='/user/' + t.user_name) !{t.hiUserName}
             if t.hiTags.length > 0
                 span(class='tags')
                     each tag in t.hiTags

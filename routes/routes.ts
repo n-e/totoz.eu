@@ -12,38 +12,47 @@ import { pool } from '../db'
 
 const routes = express.Router()
 
+const querytokws = (q: string) => q
+    .split(' ')
+    .map(e => e.replace(/\W/gu, '').trim())
+    .filter(e => e != '')
+
 // query: the query string as typed by the user
 // If the query has a length of 0: return newest totozes
 // If the query has keywords: return totozes that match all keywords exactly
 async function search(query: string, limit: number | 'ALL'):
     Promise<{name: string, nsfw: boolean, user_name: string, tags: string[]}[]>
 {
-    const keywords = query.split(' ')
-        .map(e => e.replace(/\W/gu, '').trim())
-        .filter(e => e != '')
+    const keywords = querytokws(query)
 
     let sql, bind: any[]
     if (keywords.length == 0) {
         sql = `
-            select name,nsfw,user_name,'{}'::text[] tags
-            from totoz order by created desc`
+            select name,nsfw,user_name,'{}'::text[] tags,
+                count(*) over() as count
+            from totoz order by created desc
+            limit ${limit}`
         bind = []
     }
     else {
         // We don't use totozv because using it results in the query being
         // executed in the wrong order (and being slow)
         sql = `with namesandtags as (
-                select name from totoz where name ilike $1 union select totoz_name
-                from tags where name ilike $1
+                select name, count(*) over() as count
+                from totozmeta where meta ilike all($1)
+                order by name <-> $2 asc
+                limit ${limit}
             )
-            select totoz.name,nsfw,totoz.user_name,array_agg(tags.name) tags
+            select totoz.name,nsfw,totoz.user_name,array_agg(tags.name) tags,
+            count
             from namesandtags
             left join tags on tags.totoz_name = namesandtags.name
             left join totoz on totoz.name = namesandtags.name
-            group by totoz.name`
-        bind = ['%' + keywords[0] + '%']
+            group by totoz.name,count
+            order by totoz.name <-> $2 asc
+            `
+        bind = [keywords.map(k => '%' + k + '%'), keywords[0]]
     }
-    sql += ' limit ' + limit
 
     const totozes = await pool.query(sql, bind)
 
@@ -75,22 +84,30 @@ function data_for_totoz_list(query_result: any[], path: string, query?: string):
         if (r.name == undefined || r.user_name == undefined || !r.tags.map || r.nsfw === undefined)
             throw new Error('It appears the query doesnt return the required fields ' + JSON.stringify(r))
     }
+
+    const kws = querytokws(query || '')
+
     const totozes = query_result
         .map(i => ({
             ...i, // TODO : clean this shit
             detailsUrl: '/totoz/' + i.name,
-            hiName: query ? highlightTerms(i.name, query.split(' '), 'match') : i.name,
+            hiName: query ? highlightTerms(i.name, kws, 'match') : i.name,
+            hiUserName:
+                query ? highlightTerms(i.user_name, kws, 'match') : i.user_name,
             hiTags: (i.tags != undefined && query && query != '') ?
                 i.tags
                     .filter((t: any) => t != null)
-                    .map((t: any) => highlightTerms(t, query.split(' '), 'match'))
-                    .filter((t: any) => query.split(' ').some(kw => kw .length > 0 && t.toLowerCase().indexOf(kw.toLowerCase()) >= 0))
+                    .map((t: any) => highlightTerms(t, kws, 'match'))
+                    .filter((t: any) => kws.some(
+                        kw => kw .length > 0 &&
+                        t.toLowerCase().indexOf(kw.toLowerCase()) >= 0))
                 : []
         }))
     const results_info = {
         shown: totozes.length,
-        count: 0,
-        showall_url:  path + (query ? '?q=' + hescape(query) + '&showall=1' : '?showall=1')
+        count: totozes.length > 0 ? totozes[0].count : 0,
+        showall_url:
+            path + (query ? '?q=' + hescape(query) + '&' : '?') + 'showall=1'
     }
     return {totozes, results_info}
 }
@@ -171,8 +188,9 @@ routes.get('/user/:user_id?', throwtonext(async (req, res, next) => {
     const page_user = result.rows[0]
 
     const limit = showall ? 'ALL' : 120
-    const result2 = await pool.query(
-        'select nsfw,name,user_name,tags from totozv where user_name = $1 limit ' + limit,
+    const result2 = await pool.query(`
+        select nsfw,name,user_name,tags, count(*) over() as count
+        from totozv where user_name = $1 limit ${limit}`,
         [user_id])
     // TODO: bail if user not found
 
