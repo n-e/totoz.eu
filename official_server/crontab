@@ -1,2 +1,2 @@
-0 6 * * * cd /home/totoz/app && PGDATABASE=totoz PGHOST=/var/run/postgresql node build/hfr-importer.js
+0 6 * * * cd /home/totoz/app && PGDATABASE=totoz PGHOST=/var/run/postgresql PGUSER=ne node build/hfr-importer.js
 * * * * * echo 'refresh materialized view totozmeta'|psql totoz > /dev/null

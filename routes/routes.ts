@@ -14,8 +14,10 @@ const routes = express.Router()
 
 const querytokws = (q: string) => q
     .split(' ')
-    .map(e => e.replace(/\W/gu, '').trim())
+    .map(e => e.trim())
     .filter(e => e != '')
+
+const escapeforlike = (s: string) => s.replace(/[_%\\]/g, '\$&')
 
 // query: the query string as typed by the user
 // If the query has a length of 0: return newest totozes
@@ -51,7 +53,7 @@ async function search(query: string, limit: number | 'ALL'):
             group by totoz.name,count
             order by totoz.name <-> $2 asc
             `
-        bind = [keywords.map(k => '%' + k + '%'), keywords[0]]
+        bind = [keywords.map(k => '%' + escapeforlike(k) + '%'), keywords[0]]
     }
 
     const totozes = await pool.query(sql, bind)
