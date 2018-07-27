@@ -53,7 +53,6 @@ ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFE
 
 COMMIT;
 
-GRANT select,insert,update,delete on all tables in schema public  to totoz;
 
 -- all the totoz metadata relevant for search in one string
 CREATE MATERIALIZED VIEW totozmeta as
@@ -61,8 +60,11 @@ select
     totoz.name as name,
     totoz.name || ' ' ||
     totoz.user_name || ' ' ||
-    string_agg(tags.name,' ') as meta
+    string_agg(coalesce(tags.name, '',' ') as meta
 from totoz
 left join tags on totoz.name = tags.totoz_name
 group by totoz.name
 with data;
+
+
+GRANT select,insert,update,delete on all tables in schema public  to totoz;
