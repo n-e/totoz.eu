@@ -60,7 +60,7 @@ select
     totoz.name as name,
     totoz.name || ' ' ||
     totoz.user_name || ' ' ||
-    string_agg(coalesce(tags.name, '',' ') as meta
+    string_agg(coalesce(tags.name, ''),' ') as meta
 from totoz
 left join tags on totoz.name = tags.totoz_name
 group by totoz.name
