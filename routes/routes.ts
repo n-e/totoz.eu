@@ -148,6 +148,7 @@ routes.get('/search.xml', throwtonext(async (req, res, next) => {
     }))
 
     const xml = js2xml({totozes: {totoz: totozForXml}}, {compact: true, spaces: 2})
+    res.setHeader('Access-Control-Allow-Origin','*')
     res.type('xml').send(xml)
 }))
 

@@ -93,12 +93,13 @@ app.use(flash())
 
 // Workarounds for coincoins that use "bad" urls
 app.use((req, res, next) => {
+    const url = decodeURIComponent(req.url)
     // linuxfr.org requests '/img/$i.gif' instead of '/img/$i'
-    if (req.url.match(/^\/img\/[A-Za-z0-9-_ :]+\.gif$/))
-        res.redirect(req.url.substr(0, req.url.length - 4), 301)
+    if (url.match(/^\/img\/[A-Za-z0-9-_ :]+\.gif$/))
+        res.redirect(301, req.url.substr(0, req.url.length - 4))
     // Olcc requests //img/$i
-    else if (req.url.match(/^\/\/img\/[A-Za-z0-9-_ :]+$/))
-        res.redirect(req.url.substr(1), 301)
+    else if (url.match(/^\/\/img\/[A-Za-z0-9-_ :]+$/))
+        res.redirect(301, req.url.substr(1))
     else
         next()
 })
