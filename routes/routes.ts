@@ -226,7 +226,7 @@ routes.post(
     for (const t of tags)
         if (!t.match(/^[A-Za-z0-9-_]+$/))
             errors.push(`Tag '${t}' is invalid`)
-    console.log(req.body.nsfw, nsfw)
+
     const name = '' + req.body.name
     if (!name.match(/^[A-Za-z0-9-_ ]+$/))
         errors.push(`Totoz name '${name}' is invalid`)
