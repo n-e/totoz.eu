@@ -66,5 +66,6 @@ left join tags on totoz.name = tags.totoz_name
 group by totoz.name
 with data;
 
+create index totozmeta_meta_tgrm_idx on totozmeta using gin (meta gin_trgm_ops);
 
 GRANT select,insert,update,delete on all tables in schema public  to totoz;

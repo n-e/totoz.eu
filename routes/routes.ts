@@ -41,7 +41,11 @@ async function search(query: string, limit: number | 'ALL'):
         // executed in the wrong order (and being slow)
         sql = `with namesandtags as (
                 select name, count(*) over() as count
-                from totozmeta where meta ilike all($1)
+                from totozmeta where
+                    -- we have both conds because indices are not supported
+                    -- in pg for op ALL(array)
+                    meta ilike '%' || $2 || '%'
+                    and meta ilike all($1)
                 order by name <-> $2 asc
                 limit ${limit}
             )
