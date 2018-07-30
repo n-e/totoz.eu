@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 import { JSDOM } from 'jsdom'
-// tslint:disable:no-console
+
 
 const smili_page_url = (letter: string, offset: number) =>
     `https://forum.hardware.fr/wikismilies.php?config=hfr.inc\
@@ -23,7 +23,7 @@ export async function get_totoz_on_page(letter: string, offset: number) {
 
     return Array.from(totoz_tds).map((td, i) => ({
         name: removeTotozBrackets(td.firstChild!.textContent!),
-        tags: Array.from(td.getElementsByTagName('a')).map(e => e.textContent),
+        tags: Array.from(td.getElementsByTagName('a')).map(e => e.textContent!),
         url: totoz_urls[i]!
     }))
 }
@@ -31,7 +31,6 @@ export async function get_totoz_on_page(letter: string, offset: number) {
 export async function get_totoz_image(totoz_url: string) {
     const res = await fetch(totoz_url)
     if (res.status != 200) {
-        console.log(`HTTP Error ${res.status} fetching ${totoz_url}`)
         return null
     }
     return res.buffer()
