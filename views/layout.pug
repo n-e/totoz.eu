@@ -15,7 +15,10 @@ html(lang="en")
     body(id=body_id)
         div(class='links')
             h1
-                a(href='/') Totoz.eu
+                a(href='/')
+                    img(src="/img/totoz", alt="")
+                    img.nohover(src="/logo.png", alt="",height=70)
+                    img.hover(src="/logo-hover.png", alt="",height=70)
             span(class='spc')
             if sfw
                 a(href=nsfw_url,class='sfw_status sfw')

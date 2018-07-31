@@ -1,36 +1,42 @@
 body, input {
     font-family: 'Helvetica', 'Arial', sans-serif;
-    font-size: 12px;
+    font-size: 13px;
     color: #444;
 }
 
 .large-font {
-    font-size: 13px;
+    font-size: 14px;
 }
 
 /* Misc paragraph styles */
 a {
     color: #0af;
 }
+
 /* End misc paragraph styles */
 
 body {
-    background: #f5f5f5;
+    background: url('/background.png');
     margin:0;
 }
 
 
 .links {
-    background:#fff;
+    background:#333;
+    color:#f0f0f0;
+    box-shadow: 0 0 5px #333;
+    font-size: 15px;
     margin-top:0;
     display: flex;
-    align-items: stretch;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
     line-height: 26px; /* Same as the title to align items*/
     /* border-left:3px solid #0af; */
 }
 
-.links > *:not(h1), .links > h1 > a {
-    padding: 12px 16px 12px 12px;
+.links > *:not(h1) {
+    padding: 17px 18px 17px 14px;
 }
 
 .links > span {
@@ -45,10 +51,21 @@ h1 {
     padding:0; margin: 0;
     font-weight:600;
     font-size:22px;
+    margin-bottom:3px;
 }
+
+h1 a > * { vertical-align: middle; }
+h1 a img:first-child { padding: 0 18px 0 12px; }
+h1 a .hover { display:none; }
+h1 a:hover .hover { display:initial; }
+h1 a:hover .nohover { display:none; }
 
 .links .sfw_status:not(:hover) {
     color:inherit
+}
+
+.totozes p:first-child, .about {
+    font-size: 13px;
 }
 
 .sfw_status .hover {
@@ -80,6 +97,7 @@ h1 {
 .links > a {
     text-decoration: inherit;
 }
+.links a:hover { color: #f0f0f0; }
 
 body#totoz #cnt {
     text-align: center;
@@ -165,6 +183,10 @@ body#totoz #cnt {
 
 .totoz > * {
     text-decoration: none;
+}
+
+.totoz .name {
+    font-size: 12px;
 }
 
 .totoz .username {
