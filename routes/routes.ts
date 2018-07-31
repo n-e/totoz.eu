@@ -22,17 +22,21 @@ const escapeforlike = (s: string) => s.replace(/[_%\\]/g, '\$&')
 // query: the query string as typed by the user
 // If the query has a length of 0: return newest totozes
 // If the query has keywords: return totozes that match all keywords exactly
-async function search(query: string, limit: number | 'ALL'):
+async function search(query: string, limit: number | 'ALL', exclude_hfr: boolean):
     Promise<{name: string, nsfw: boolean, user_name: string, tags: string[]}[]>
 {
     const keywords = querytokws(query)
+
+    const extra_where = exclude_hfr ? "AND user_name <> 'hfr'" : ''
 
     let sql, bind: any[]
     if (keywords.length == 0) {
         sql = `
             select name,nsfw,user_name,'{}'::text[] tags,
                 count(*) over() as count
-            from totoz order by created desc
+            from totoz
+            where true ${extra_where}
+            order by created desc
             limit ${limit}`
         bind = []
     }
@@ -46,6 +50,7 @@ async function search(query: string, limit: number | 'ALL'):
                     -- in pg for op ALL(array)
                     meta ilike '%' || $2 || '%'
                     and meta ilike all($1)
+                    ${extra_where}
                 order by name <-> $2 asc
                 limit ${limit}
             )
@@ -132,7 +137,9 @@ routes.get('/', throwtonext(async (req, res, next) => {
     // QUERY PARAMETER 3: showall (optional)
     const showall = req.query.showall === '1'
 
-    const info = await search(query, showall ? 'ALL' : 120)
+    const exclude_hfr = req.query.hfr == 'off'
+
+    const info = await search(query, showall ? 'ALL' : 120, exclude_hfr)
 
     res.render(
         template,
@@ -142,7 +149,9 @@ routes.get('/', throwtonext(async (req, res, next) => {
 routes.get('/search.xml', throwtonext(async (req, res, next) => {
     const query = '' + (req.query.terms || '')
     const offset = + (req.query.offset || 0) // not used for now
-    const totoz = await search(query, 120)
+    const exclude_hfr = req.query.hfr == 'off'
+
+    const totoz = await search(query, 120, exclude_hfr)
 
     const totozForXml = totoz.map(t => ({
         name: t.name,
@@ -152,7 +161,7 @@ routes.get('/search.xml', throwtonext(async (req, res, next) => {
     }))
 
     const xml = js2xml({totozes: {totoz: totozForXml}}, {compact: true, spaces: 2})
-    res.setHeader('Access-Control-Allow-Origin','*')
+    res.setHeader('Access-Control-Allow-Origin', '*')
     res.type('xml').send(xml)
 }))
 

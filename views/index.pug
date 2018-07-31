@@ -5,6 +5,13 @@ block content
         input(
             type="text", name="q", id='query',value=query,autofocus,
             autocomplete='off',autocorrect='off',autocapitalize='off',spellecheck='off')
+        = ' '
+        span.hfrtoggle
+            input.tgl(type="checkbox", name="hfr",id="hfr",value='off')
+            label.tgl-btn(for='hfr')
+            = ' '
+            span HFR
+    
     div(class='totozes')
         include fragments/totoz_list.pug
 

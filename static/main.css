@@ -244,3 +244,64 @@ form.delete_tag input[type='submit'] {
     padding:0;
     cursor: pointer;
 }
+
+/* Per https://codepen.io/mallendeo/pen/eLIiG */
+
+.tgl {
+	display: none;
+}
+
+  
+.tgl + .tgl-btn {
+    outline: 0;
+    display: inline-block;
+    width: 2em;
+    height: 1em;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: text-bottom;
+}
+
+.tgl + .tgl-btn:after,
+.tgl + .tgl-btn:before {
+    position: relative;
+    display: block;
+    content: "";
+    width: 50%;
+    height: 100%;
+}
+    
+.tgl + .tgl-btn:after {
+    left: 50%;
+}
+
+.tgl + .tgl-btn:before {
+    display: none;
+}
+
+.tgl:checked + .tgl-btn:after {
+    left: 0;
+}
+
+
+/* theme */
+.tgl + .tgl-btn {
+    background: #9FD6AE;
+    border-radius: 2em;
+    padding: 2px;
+    transition: all .2s ease;
+}
+
+.tgl + .tgl-btn:after {
+    border-radius: 50%;
+    background: #fff;
+    transition: all .1s ease;
+}
+
+.tgl:checked + .tgl-btn {
+    background: #ececec;
+}
+
+.hfrtoggle {display:inline-block; vertical-align:middle;}
+.hfrtoggle span {color: #555;}

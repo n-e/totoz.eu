@@ -58,6 +58,7 @@ COMMIT;
 CREATE MATERIALIZED VIEW totozmeta as
 select
     totoz.name as name,
+    totoz.user_name as user_name,
     totoz.name || ' ' ||
     totoz.user_name || ' ' ||
     string_agg(coalesce(tags.name, ''),' ') as meta

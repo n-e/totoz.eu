@@ -7,9 +7,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
     let currentRequest = null
 
     const q = document.getElementById('query')
+    const hfr = document.getElementById('hfr')
     if (q)
-        q.oninput = e => {
-            const query = encodeURIComponent(e.target.value)
+        q.oninput = hfr.oninput = e => {
+            const query = encodeURIComponent(q.value)
+                + (hfr.checked ? '&hfr=off' : '')
 
             const new_url = (query.length > 0) ? '/?q='+query : '/'
 
