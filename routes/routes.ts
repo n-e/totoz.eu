@@ -143,7 +143,12 @@ routes.get('/', throwtonext(async (req, res, next) => {
 
     res.render(
         template,
-        {query, ...data_for_totoz_list(info, '/', query), body_id: 'index'})
+        {
+            query,
+            ...data_for_totoz_list(info, '/', query),
+            body_id: 'index',
+            exclude_hfr
+        })
 }))
 
 routes.get('/search.xml', throwtonext(async (req, res, next) => {
