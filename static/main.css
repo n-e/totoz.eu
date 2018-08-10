@@ -122,7 +122,7 @@ body#totoz #cnt {
 
 #query {
     padding:3px;
-    min-width:20em;
+    min-width:17em;
     width:30%;
     -webkit-appearance: none;
     border:1px solid #ccc;
@@ -310,3 +310,21 @@ form.delete_tag input[type='submit'] {
 
 .hfrtoggle {display:inline-block; vertical-align:middle;}
 .hfrtoggle span {color: #555;}
+
+/* Mobile adaptations */
+
+@media screen and (max-width: 640px) {
+    body {-webkit-text-size-adjust: none;}
+
+    form table, form tr, form td {
+        display: block;
+    }
+
+    form table {
+        width: fit-content;
+    }
+
+    input {
+        font-size: 16px;
+    }
+  }
