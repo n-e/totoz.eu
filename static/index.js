@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     const q = document.getElementById('query')
     const hfr = document.getElementById('hfr')
     if (q)
-        q.oninput = hfr.oninput = e => {
+        q.oninput = hfr.oninput = hfr.onchange = e => {
             const query = encodeURIComponent(q.value)
                 + (hfr.checked ? '&hfr=off' : '')
 

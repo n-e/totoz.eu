@@ -55,10 +55,15 @@ h1 {
 }
 
 h1 a > * { vertical-align: middle; }
-h1 a img:first-child { padding: 0 18px 0 12px; }
-h1 a .hover { display:none; }
-h1 a:hover .hover { display:initial; }
-h1 a:hover .nohover { display:none; }
+h1 a > img:first-child { padding: 0 18px 0 12px; }
+
+.sitename {
+    position: relative;
+    display: inline-block;
+    height: 70px; /* Pourquoi la hauteur ne se postionne pas correctement par défaut ? - mystère */
+}
+h1 a .hover { z-index: -1; position: absolute; left:0; }
+h1 a:hover .hover { z-index: 1; }
 
 .links .sfw_status:not(:hover) {
     color:inherit

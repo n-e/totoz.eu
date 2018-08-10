@@ -17,8 +17,9 @@ html(lang="en")
             h1
                 a(href='/')
                     img(src="/img/totoz", alt="",width=67,height=50)
-                    img.nohover(src="/logo.png", alt="",width=157,height=70)
-                    img.hover(src="/logo-hover.png", alt="",width=157,height=70)
+                    span(class='sitename')
+                        img.nohover(src="/logo.png", alt="",width=157,height=70)
+                        img.hover(src="/logo-hover.png", alt="",width=157,height=70)
             span(class='spc')
             if sfw
                 a(href=nsfw_url,class='sfw_status sfw')
