@@ -156,7 +156,12 @@ routes.get('/search.xml', throwtonext(async (req, res, next) => {
     const offset = + (req.query.offset || 0) // not used for now
     const exclude_hfr = req.query.hfr == 'off'
 
-    const totoz = await search(query, 120, exclude_hfr)
+    // The 1000 results limit is enough to return every totoz
+    // for queries such as 'chien' or 'frog' but doesn't overflow
+    // clients for 0 or 1-letter queries
+    // That's kind of ugly but a better solution such as using count/offset
+    // would require the clients to be modified
+    const totoz = await search(query, 1000, exclude_hfr)
 
     const totozForXml = totoz.map(t => ({
         name: t.name,
