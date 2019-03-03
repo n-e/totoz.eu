@@ -15,7 +15,7 @@ block content
                     span(class='tags')
                         each tag in data
                             a(href='/?q='+tag.tag_name) #{tag.tag_name}
-                            if tag.can_delete
+                            if tag.can_delete_tag
                                 form(action="/delete_tag", method="post",class='delete_tag')
                                     input(type="hidden", name="tag_name",value=tag.tag_name)
                                     input(type="hidden", name="totoz_name",value=tag.totoz_name)
@@ -38,3 +38,7 @@ block content
                         input(type="hidden", name="totoz_name",value=t.totoz_name)
                         =' '
                         input(type="submit", value="Add")
+                    if t.can_delete_totoz
+                        form(action="/delete_totoz", method="post")
+                            input(type="hidden", name="totoz_name",value=t.totoz_name)
+                            input(type="submit", value="Delete")
