@@ -182,7 +182,8 @@ routes.get('/totoz/:totoz_id?', throwtonext(async (req, res, next) => {
             t.name totoz_name,
             ta.name tag_name,
             t.user_name as totoz_user_name,
-            (ta.user_name = $2 or t.user_name = $2) as can_delete,
+            (ta.user_name = $2 or t.user_name = $2) as can_delete_tag,
+            t.user_name = $2 as can_delete_totoz,
             nsfw,
             created,
             changed
@@ -349,6 +350,26 @@ routes.post('/delete_tag', throwtonext(async (req, res, next) => {
             )`,
             [tag_name, totoz_name, req.user.name])
         res.redirect('/totoz/' + totoz_name)
+    }
+    else
+        next()
+}))
+
+routes.post('/delete_totoz', throwtonext(async (req, res, next) => {
+    const {totoz_name} = req.body
+    if (req.user && await validate_totoz_name(totoz_name)) {
+        await pool.query(`
+            delete from tags
+            where totoz_name = $1 
+	    and exists(select 1 from totoz where totoz_name=$1 and user_name=$2)
+            `,
+            [totoz_name, req.user.name])
+        await pool.query(`
+            delete from totoz
+            where name = $1 and user_name=$2
+            `,
+            [totoz_name, req.user.name])
+        res.redirect('/')
     }
     else
         next()
