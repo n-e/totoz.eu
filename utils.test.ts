@@ -13,7 +13,7 @@ const tests = [
 
 const test_fns = tests.map(t => ({
     name: `test: highlightTerms(${JSON.stringify(t[0])}) == ${JSON.stringify(t[1])}`,
-    fn:() => assert.equal(highlightTerms.apply(undefined,t[0]),t[1])}))
+    fn:() => assert.equal(highlightTerms.apply(undefined,t[0] as any),t[1])}))
 const testObj:{[idx:string]:()=>void} = {}
 test_fns.forEach(t => testObj[t.name] = t.fn)
 test.run(testObj)
