@@ -260,7 +260,7 @@ routes.post(
         errors.push('You need to provide an image for the totoz')
 
     if (image) {
-        if (image.length > 1024 * 500)
+        if (image.length > 1024 * 1024)
             errors.push(`Image is too big (${Math.round(image.length / 1024)}kB)`)
 
         try {
@@ -268,7 +268,7 @@ routes.post(
         if (data.type != 'gif' && data.type != 'jpg' && data.type != 'png')
             errors.push(
                 `Wrong image format (${data.type}), gif, jpeg and png are allowed.`)
-        if (data.height > 200 || data.width > 200)
+        if (data.height > 480 || data.width > 480)
             errors.push(`Image is too big (${data.width},${data.height})`)
         }
         catch (e) {
