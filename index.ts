@@ -46,8 +46,7 @@ if (noimages)
 
 app.use(express.static(absPath('../static')))
 
-if (app.get('env') == 'development')
-    app.use(morgan('tiny'))
+app.use(morgan('tiny'))
 
 app.use(session({
     secret: session_secret,

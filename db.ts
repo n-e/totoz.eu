@@ -1,3 +1,8 @@
 import { Pool } from "pg";
 
-export const pool = new Pool()
+const connectionString = process.env.DATABASE_URL;
+console.log(connectionString)
+export const pool = new Pool({
+  connectionTimeoutMillis: 1000,
+  ...(connectionString && { connectionString }),
+});
