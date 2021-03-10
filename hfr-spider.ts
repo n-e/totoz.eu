@@ -29,7 +29,7 @@ export async function get_totoz_on_page(letter: string, offset: number) {
 }
 
 export async function get_totoz_image(totoz_url: string) {
-    const res = await fetch(totoz_url)
+    const res = await fetch(encodeURI(totoz_url))
     if (res.status != 200) {
         return null
     }

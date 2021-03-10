@@ -1,0 +1,8 @@
+{
+  "cron": [
+    {
+      "command": "node build/hfr-importer.js",
+      "schedule": "@daily"
+    }
+  ]
+}
