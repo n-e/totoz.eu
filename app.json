@@ -5,7 +5,7 @@
       "schedule": "@daily"
     },
     {
-      "command": "psql $DATABASE_URL -c 'refresh materialized view totozmeta'",
+      "command": "npm run reindex",
       "schedule": "@hourly"
     }
   ]

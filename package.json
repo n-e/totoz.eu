@@ -7,8 +7,8 @@
     "test": "node build/utils.test.js",
     "build": "tsc",
     "start": "node build/index.js",
-    "watch": "concurrently --kill-others 'tsc -w' 'nodemon build/index.js'",
-    "deploy": "ssh beta.totoz.eu 'cd ~totoz/app && git pull && npm i --no-save && npm run build && sudo systemctl restart totoz'"
+    "reindex": "psql $DATABASE_URL -c 'refresh materialized view totozmeta'",
+    "watch": "concurrently --kill-others 'tsc -w' 'nodemon build/index.js'"
   },
   "repository": {
     "type": "git",
