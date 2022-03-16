@@ -80,7 +80,7 @@ function get_router(passport: PassportStatic) {
           [body.username, drupalHash.hashPassword(body.password[0]), body.email]
         );
         req.login(rows[0], (cb) => res.redirect("/user/" + body.username));
-      } catch (error) {
+      } catch (error: any) {
         if (
           error.constraint == "user_name_uniqueci_idx" ||
           error.constraint == "users_pkey"
