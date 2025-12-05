@@ -115,7 +115,8 @@ function data_for_totoz_list(
 
   const totozes = query_result.map((i) => ({
     ...i, // TODO : clean this shit
-    detailsUrl: "/totoz/" + i.name,
+    detailsUrl: "/totoz/" + encodeURIComponent(i.name),
+    imageUrl: "/img/" + encodeURIComponent(i.name),
     hiName: query ? highlightTerms(i.name, kws, "match") : i.name,
     hiUserName: query ? highlightTerms(i.user_name, kws, "match") : i.user_name,
     hiTags:
