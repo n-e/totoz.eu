@@ -23,7 +23,7 @@
   "dependencies": {
     "body-parser": "^1.20.4",
     "connect-flash": "0.1.1",
-    "connect-pg-simple": "7.0.0",
+    "connect-pg-simple": "10.0.0",
     "drupal-hash": "1.0.4",
     "escape-html": "1.0.3",
     "express": "^4.22.1",
