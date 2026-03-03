@@ -55,7 +55,6 @@
     "@types/passport-local": "^1.0.38",
     "@types/pg": "^8.18.0",
     "nyc": "^18.0.0",
-    "test": "0.6.0",
     "typescript": "^5.9.3"
   }
 }

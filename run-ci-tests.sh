@@ -9,3 +9,4 @@ npm run build
 DATABASE_URL=psql://totoz:example@localhost/totoz_test npm start &
 npx playwright install chromium
 npx playwright test e2e/
+node --test

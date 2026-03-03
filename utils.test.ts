@@ -1,7 +1,6 @@
 import { highlightTerms } from "./utils.ts";
 import assert from "assert";
-// @ts-expect-error
-import test from "test";
+import test from "node:test";
 
 const tests = [
   [["", [], "plop"], ""],
@@ -21,6 +20,5 @@ const test_fns = tests.map((t) => ({
   )}`,
   fn: () => assert.equal(highlightTerms.apply(undefined, t[0] as any), t[1]),
 }));
-const testObj: { [idx: string]: () => void } = {};
-test_fns.forEach((t) => (testObj[t.name] = t.fn));
-test.run(testObj);
+
+test_fns.forEach((t) => test(t.name, t.fn));
