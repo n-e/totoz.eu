@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/n-e/totoz.eu#readme",
   "dependencies": {
-    "body-parser": "^1.20.4",
+    "body-parser": "^2.2.2",
     "connect-flash": "0.1.1",
     "connect-pg-simple": "7.0.0",
     "drupal-hash": "1.0.4",
