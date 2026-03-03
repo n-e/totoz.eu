@@ -1,6 +1,6 @@
 import { get_totoz_on_page, get_totoz_image, letters } from "./hfr-spider.ts";
 import { pool } from "./db.ts";
-import { ClientBase } from "pg";
+import { type ClientBase } from "pg";
 // tslint:disable:no-console
 
 const toPgBytea = (b: Buffer | null) => (b ? "\\x" + b.toString("hex") : null);
