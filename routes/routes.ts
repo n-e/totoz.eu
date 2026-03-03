@@ -1,13 +1,13 @@
 // All the routes for the totoz.eu server
 
-import express = require("express");
-import hescape = require("escape-html");
+import express from "express";
+import hescape from "escape-html";
 import multer from "multer";
 import sizeOf from "image-size";
 import { js2xml } from "xml-js";
 
-import { highlightTerms, throwtonext } from "../utils";
-import { pool } from "../db";
+import { highlightTerms, throwtonext } from "../utils.ts";
+import { pool } from "../db.ts";
 
 const routes = express.Router();
 
@@ -25,7 +25,7 @@ const escapeforlike = (s: string) => s.replace(/[_%\\]/g, "$&");
 async function search(
   query: string,
   limit: number | "ALL",
-  exclude_hfr: boolean
+  exclude_hfr: boolean,
 ): Promise<
   { name: string; nsfw: boolean; user_name: string; tags: string[] }[]
 > {
@@ -79,7 +79,7 @@ async function search(
 function data_for_totoz_list(
   query_result: any[],
   path: string,
-  query?: string
+  query?: string,
 ): {
   totozes: {
     name: string;
@@ -107,7 +107,7 @@ function data_for_totoz_list(
     )
       throw new Error(
         "It appears the query doesnt return the required fields " +
-          JSON.stringify(r)
+          JSON.stringify(r),
       );
   }
 
@@ -128,8 +128,8 @@ function data_for_totoz_list(
               kws.some(
                 (kw) =>
                   kw.length > 0 &&
-                  t.toLowerCase().indexOf(kw.toLowerCase()) >= 0
-              )
+                  t.toLowerCase().indexOf(kw.toLowerCase()) >= 0,
+              ),
             )
         : [],
   }));
@@ -168,7 +168,7 @@ routes.get(
       body_id: "index",
       exclude_hfr,
     });
-  })
+  }),
 );
 
 routes.get(
@@ -194,11 +194,11 @@ routes.get(
 
     const xml = js2xml(
       { totozes: { totoz: totozForXml } },
-      { compact: true, spaces: 2 }
+      { compact: true, spaces: 2 },
     );
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.type("xml").send(xml);
-  })
+  }),
 );
 
 routes.get(
@@ -219,7 +219,7 @@ routes.get(
         from totoz t
         left join tags ta on ta.totoz_name = t.name
         where t.name = $1;`,
-      [totoz_id, req.user ? req.user.name : null]
+      [totoz_id, req.user ? req.user.name : null],
     );
 
     if (rows.length == 0) return next();
@@ -229,7 +229,7 @@ routes.get(
       body_id: "totoz",
       page_title: "[:" + totoz_id + "]",
     });
-  })
+  }),
 );
 
 routes.get(
@@ -240,7 +240,7 @@ routes.get(
 
     const result = await pool.query(
       "select name,created from users where name = $1",
-      [user_id]
+      [user_id],
     );
 
     if (result.rowCount == 0) {
@@ -255,7 +255,7 @@ routes.get(
       `
         select nsfw,name,user_name,tags, count(*) over() as count
         from totozv where user_name = $1 limit ${limit}`,
-      [user_id]
+      [user_id],
     );
     // TODO: bail if user not found
 
@@ -263,7 +263,7 @@ routes.get(
       page_user,
       ...data_for_totoz_list(result2.rows, "/user/" + user_id),
     });
-  })
+  }),
 );
 
 routes.get(
@@ -273,7 +273,7 @@ routes.get(
       prevValues: { nsfw: "false" },
       errors: [],
     });
-  })
+  }),
 );
 
 const multipart = multer();
@@ -307,10 +307,10 @@ routes.post(
         errors.push(`Image is too big (${Math.round(image.length / 1024)}kB)`);
 
       try {
-        const data = sizeOf(image);
+        const data = sizeOf.imageSize(image);
         if (data.type != "gif" && data.type != "jpg" && data.type != "png")
           errors.push(
-            `Wrong image format (${data.type}), gif, jpeg and png are allowed.`
+            `Wrong image format (${data.type}), gif, jpeg and png are allowed.`,
           );
         if (data.height === undefined || data.width === undefined)
           errors.push(`Unknown dimensions for image`);
@@ -329,14 +329,14 @@ routes.post(
           `
                 insert into totoz(name,created,changed,nsfw,user_name,image)
                 values($1,now(),now(),$2,$3,$4)`,
-          [name, nsfw, req.user.name, image]
+          [name, nsfw, req.user.name, image],
         );
         await client.query(
           `
                 insert into tags(name,totoz_name)
                 select unnest as name,$1 as totoz_name
                 from  unnest($2::varchar[]);`,
-          [name, tags]
+          [name, tags],
         );
         await client.query("commit");
         res.redirect("/totoz/" + name);
@@ -356,7 +356,7 @@ routes.post(
 
     if (errors.length > 0)
       res.render("create_edit_totoz", { errors, prevValues: req.body });
-  })
+  }),
 );
 
 // returns the totoz name if it exists, null otherwise
@@ -383,11 +383,11 @@ routes.post(
             select unnest as name,$1,$2 as totoz_name
             from  unnest($3::varchar[])
             on conflict do nothing`,
-        [totoz_name, req.user.name, tags]
+        [totoz_name, req.user.name, tags],
       );
       res.redirect("/totoz/" + totoz_name);
     }
-  })
+  }),
 );
 
 routes.post(
@@ -402,11 +402,11 @@ routes.post(
                 user_name = $3
                 or exists (select * from totoz where name = $2 and user_name = $3)
             )`,
-        [tag_name, totoz_name, req.user.name]
+        [tag_name, totoz_name, req.user.name],
       );
       res.redirect("/totoz/" + totoz_name);
     } else next();
-  })
+  }),
 );
 
 routes.post(
@@ -420,18 +420,18 @@ routes.post(
             where totoz_name = $1 
 	    and exists(select 1 from totoz where totoz_name=$1 and user_name=$2)
             `,
-        [totoz_name, req.user.name]
+        [totoz_name, req.user.name],
       );
       await pool.query(
         `
             delete from totoz
             where name = $1 and user_name=$2
             `,
-        [totoz_name, req.user.name]
+        [totoz_name, req.user.name],
       );
       res.redirect("/");
     } else next();
-  })
+  }),
 );
 
 routes.get(
@@ -439,7 +439,7 @@ routes.get(
   throwtonext(async (req, res, next) => {
     const { rows } = await pool.query(
       "select name,nsfw,image from totoz where lower(name) = lower($1)",
-      [req.params.name]
+      [req.params.name],
     );
     if (rows.length == 0) next();
     else if (rows[0].nsfw && res.locals.sfw) {
@@ -452,13 +452,13 @@ routes.get(
     else {
       let image_type = "gif";
       try {
-        const { type } = sizeOf(rows[0].image);
+        const { type } = sizeOf.imageSize(rows[0].image);
         if (type) image_type = type;
       } catch (e) {}
       res.setHeader("Cache-Control", ["public", "max-age=" + 3600 * 24 * 7]);
       res.type(image_type).send(rows[0].image);
     }
-  })
+  }),
 );
 
 export default routes;

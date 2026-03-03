@@ -1,4 +1,4 @@
-import { highlightTerms } from "./utils";
+import { highlightTerms } from "./utils.ts";
 import assert from "assert";
 // @ts-expect-error
 import test from "test";

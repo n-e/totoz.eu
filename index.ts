@@ -1,25 +1,27 @@
 // Entry Point for the totoz server
 
-import express = require("express");
-import path = require("path");
-import morgan = require("morgan");
-import session = require("express-session");
-import bodyParser = require("body-parser");
-import passport = require("passport");
-import localStrategy = require("passport-local");
-import flash = require("connect-flash");
-import common_routes from "./routes/common";
-import auth_routes from "./routes/auth";
-import router from "./routes/routes";
+import express from "express";
+import path from "path";
+import morgan from "morgan";
+import session from "express-session";
+import bodyParser from "body-parser";
+import passport from "passport";
+import localStrategy from "passport-local";
+import flash from "connect-flash";
+import common_routes from "./routes/common.ts";
+import auth_routes from "./routes/auth.ts";
+import router from "./routes/routes.ts";
 import pgSession from "connect-pg-simple";
-import { pool } from "./db";
-// tslint:disable-next-line:no-var-requires
-const drupalHash = require("drupal-hash");
+import { pool } from "./db.ts";
+
+// @ts-expect-error
+import drupalHash from "drupal-hash";
+import { existsSync } from "fs";
 
 // Misc. functions
 
 // Makes an absolute path from a path relative to the project folder
-const absPath = (relPath: string) => path.join(__dirname, relPath);
+const absPath = (relPath: string) => path.join(import.meta.dirname, relPath);
 
 // Environment variables
 //   NOIMAGES : if true, serve a default image for the totozes. Useful for a
@@ -35,14 +37,16 @@ const cookie_domain = process.env.COOKIEDOMAIN || undefined;
 // Setup and run app
 const app = express();
 
+const staticPrefix = existsSync(absPath("../views")) ? ".." : ".";
+
 app.set("view engine", "pug");
-app.set("views", absPath("../views"));
+app.set("views", absPath(staticPrefix + "/views"));
 
 // Middleware
 if (noimages)
   app.get(/\.gif$/, (req, res) => res.sendFile(absPath("../static/uxam.gif")));
 
-app.use(express.static(absPath("../static")));
+app.use(express.static(absPath(staticPrefix + "/static")));
 
 app.use(morgan("tiny"));
 
@@ -57,7 +61,7 @@ app.use(
     },
     store: new (pgSession(session))({ pool }),
     resave: false,
-  })
+  }),
 );
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
@@ -67,7 +71,7 @@ passport.use(
   new localStrategy.Strategy(async (username, password, done) => {
     const user = await pool.query(
       "select * from users where lower(name) = lower($1)",
-      [username]
+      [username],
     );
 
     if (
@@ -76,7 +80,7 @@ passport.use(
     )
       done(null, user.rows[0]);
     else done(null, false, { message: "Wrong username or password" });
-  })
+  }),
 );
 
 declare global {
@@ -119,11 +123,11 @@ app.use(
     err: any,
     req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    next: express.NextFunction,
   ) => {
     console.log("ERROR:", req.url, req.body, req.session, err);
     res.sendStatus(500);
-  }
+  },
 );
 
 app.listen(port, hostname);

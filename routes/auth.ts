@@ -1,9 +1,9 @@
-import express = require("express");
-import { PassportStatic } from "passport";
-// tslint:disable-next-line:no-var-requires
-const drupalHash = require("drupal-hash");
-import { pool } from "../db";
-import { throwtonext } from "../utils";
+import express from "express";
+import type { PassportStatic } from "passport";
+// @ts-expect-error
+import drupalHash from "drupal-hash";
+import { pool } from "../db.ts";
+import { throwtonext } from "../utils.ts";
 import * as t from "io-ts";
 
 function get_router(passport: PassportStatic) {
