@@ -3,7 +3,7 @@
 import express from "express";
 import hescape from "escape-html";
 import multer from "multer";
-import sizeOf from "image-size";
+import { imageSize } from "image-size";
 import { js2xml } from "xml-js";
 
 import { highlightTerms, throwtonext } from "../utils.ts";
@@ -307,7 +307,7 @@ routes.post(
         errors.push(`Image is too big (${Math.round(image.length / 1024)}kB)`);
 
       try {
-        const data = sizeOf.imageSize(image);
+        const data = imageSize(image);
         if (data.type != "gif" && data.type != "jpg" && data.type != "png")
           errors.push(
             `Wrong image format (${data.type}), gif, jpeg and png are allowed.`,
@@ -317,6 +317,7 @@ routes.post(
         else if (data.height > 200 || data.width > 200)
           errors.push(`Image is too big (${data.width},${data.height})`);
       } catch (e) {
+        console.log(e);
         errors.push(`Unknown image format`);
       }
     }
@@ -452,7 +453,7 @@ routes.get(
     else {
       let image_type = "gif";
       try {
-        const { type } = sizeOf.imageSize(rows[0].image);
+        const { type } = imageSize(rows[0].image);
         if (type) image_type = type;
       } catch (e) {}
       res.setHeader("Cache-Control", ["public", "max-age=" + 3600 * 24 * 7]);
