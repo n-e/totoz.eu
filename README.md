@@ -1,8 +1,19 @@
 ## Build & run locally
 
-```
+```sh
 docker compose up -d
-npm install && npm run build && PGHOST=localhost PGDATABASE=totoz_test PGUSER=totoz PGPASSWORD=example npm start
+./create-test-db.sh
+npm install && npm run build && DATABASE_URL=psql://totoz:example@localhost/totoz_test npm start
+```
+
+## Tests
+
+```sh
+docker compose up -d
+./create-test-db.sh
+npx tsc && DATABASE_URL=psql://totoz:example@localhost/totoz_test npx nyc -a -r=html npm start
+npx playwright install chromium
+npx playwright test e2e/
 ```
 
 ## Create the totoz database
@@ -17,7 +28,7 @@ npm install && npm run build && PGHOST=localhost PGDATABASE=totoz_test PGUSER=to
    - `jq -r '.totozes[]|.name as $n|.tags[]|[$n,.]|@csv' totoz.json`
    - `\copy tags(totoz_name,name) from 'tags.csv' with (format 'csv');`
 1. Do the same for images :
-   - Get missing images: `` IFS='\n' cat missing-2018-07-06|while read i;do curl -s `echo "http://nsfw.totoz.eu/$i.gif"|sed 's/ /%20/g'` > "missing-2018-07-06-f/$i.gif" ;done ``
+   - Get missing images: ``IFS='\n' cat missing-2018-07-06|while read i;do curl -s `echo "http://nsfw.totoz.eu/$i.gif"|sed 's/ /%20/g'` > "missing-2018-07-06-f/$i.gif" ;done``
    - check with file they're good
    - `IFS='\n' find . -name "*.gif"|while read i;do (basename -s .gif -- "$i";echo ',\x'; xxd -p -- "$i")|tr -d '\n';echo ''; done`
    - `create temporary table im(name varchar(512),image bytea); \copy im(name,image) from 'totoz/im.csv' with (format 'csv'); update totoz set image = im.image from im where lower(totoz.name) = lower(im.name);`
