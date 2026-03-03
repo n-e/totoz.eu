@@ -127,3 +127,8 @@ app.use(
 );
 
 app.listen(port, hostname);
+
+// Handle sigint so, among other things, the process exits gracefully and the nyc coverage is saved
+process.on("SIGINT", function () {
+  process.exit();
+});
