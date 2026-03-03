@@ -15,7 +15,7 @@ function get_router(passport: PassportStatic) {
       successRedirect: "/",
       failureRedirect: "/login",
       failureFlash: true,
-    })
+    }),
   );
   router.get("/login", (req, res) => {
     res.render("login", { message: req.flash("error") });
@@ -27,12 +27,9 @@ function get_router(passport: PassportStatic) {
   });
 
   router.get("/logout", (req, res) => {
-    req.logout();
-    // req.logout is not instant because of the postgres session
-    // store but it doesn't provide a callback so we
-    // save the session again to work around that
-    if (req.session) req.session.save((cb) => res.redirect("/"));
-    else res.redirect("/");
+    req.logout(() => {
+      res.redirect("/");
+    });
   });
 
   router.get("/new_account", (req, res) => {
@@ -58,7 +55,7 @@ function get_router(passport: PassportStatic) {
       if (!body.username.match(/^[A-Za-z0-9-_]+$/))
         errors.push(
           "Only unaccented letters, numbers, dashes (-) and underscores \
-                (_) are allowed in username."
+                (_) are allowed in username.",
         );
 
       if (!body.email.match(/^.+@.+\..+$/)) errors.push("Invalid email.");
@@ -77,7 +74,11 @@ function get_router(passport: PassportStatic) {
       try {
         const { rows } = await pool.query(
           "insert into users(name,password,email) values($1,$2,$3) returning *",
-          [body.username, drupalHash.hashPassword(body.password[0]), body.email]
+          [
+            body.username,
+            drupalHash.hashPassword(body.password[0]),
+            body.email,
+          ],
         );
         req.login(rows[0], (cb) => res.redirect("/user/" + body.username));
       } catch (error: any) {
@@ -89,7 +90,7 @@ function get_router(passport: PassportStatic) {
           res.render("new_account", { errors });
         } else throw error;
       }
-    })
+    }),
   );
 
   return router;
