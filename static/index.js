@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     const isNsfw = sfw_link.classList.contains('nsfw')
 
     let currentRequest = null
+    let currentRequestQuery = null
 
     const q = document.getElementById('query')
     const hfr = document.getElementById('hfr')
@@ -12,6 +13,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         q.oninput = hfr.oninput = hfr.onchange = e => {
             const query = encodeURIComponent(q.value)
                 + (hfr.checked ? '&hfr=off' : '')
+
+            if (query === currentRequestQuery) return;
 
             const new_url = (query.length > 0) ? '/?q='+query : '/'
 
@@ -27,6 +30,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             if (currentRequest)
                 currentRequest.abort()
 
+            currentRequestQuery = query
             currentRequest = new XMLHttpRequest()
             currentRequest.addEventListener('load', loadListener)
             currentRequest.open('GET','/?tlonly=1&q=' + query)
