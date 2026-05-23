@@ -26,7 +26,7 @@
     "connect-pg-simple": "10.0.0",
     "drupal-hash": "1.0.4",
     "escape-html": "1.0.3",
-    "express": "^4.22.1",
+    "express": "^4.22.2",
     "express-session": "^1.19.0",
     "fp-ts": "^2.16.11",
     "image-size": "2.0.2",
