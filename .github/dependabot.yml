@@ -2,29 +2,41 @@
 
 version: 2
 updates:
-  - package-ecosystem: "docker"
-    directory: "/"
-    labels: []
-    schedule:
-      interval: "weekly"
+  # - package-ecosystem: "docker"
+  #   directory: "/"
+  #   labels: []
+  #   schedule:
+  #     interval: "weekly"
+  #     day: "monday"
+  #     time: "08:00"
+  #     timezone: "Europe/Paris"
 
   - package-ecosystem: "docker-compose"
     directory: "/"
     labels: []
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Europe/Paris"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     labels: []
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Europe/Paris"
 
   - package-ecosystem: "npm"
     directory: "/"
     labels: []
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Europe/Paris"
     groups:
       minor-patch:
         update-types:
